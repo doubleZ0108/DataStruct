@@ -107,6 +107,48 @@ void InsertLink(const struct NODE *head, bool flag)
 		}
 	}
 }
+/*删除结点*/
+void DeleteLink(const struct NODE *head)
+{
+	struct NODE *move = head;
+	//删除结点的时候只能初始化为头结点,要不然应该删除结点的上一个结点找不到
+	//没法把前面和后面链起来
+
+	int index;
+	printf("你想删除第几个结点: ");
+	scanf("%d", &index);
+
+	for (int i = 1; move->next != NULL; move = move->next,++i)
+	{
+		if (i == index)
+		{
+			struct NODe *save = move->next;
+			move->next = move->next->next;
+			free(save);
+			save = NULL;
+
+			return;
+		}
+	}
+}
+/*销毁链表*/			//删除链表中的所有结点,包括头结点和头指针
+void DestroyLink(struct NODE *head)
+//这是head不能修饰成const了
+{
+	struct NODE *save = NULL;
+
+	while (head != NULL)
+	{
+		save = head;			//保存当前结点
+		head = head->next;		//直接用head移动到下一个结点
+		free(save);
+		save = NULL;
+	}
+	if (head == NULL)
+	{
+		printf("链表已销毁!\n");
+	}
+}
 
 int main(void)
 {
@@ -115,10 +157,13 @@ int main(void)
 	Init(head);
 	OutputLink(head);
 
-	/*InsertLink(head, BACK);
-	OutputLink(head);
-	InsertLink(head, FRONT);
-	OutputLink(head);*/
+	//InsertLink(head, BACK);
+	//OutputLink(head);
+	//InsertLink(head, FRONT);
+	//OutputLink(head);
+	//DeleteLink(head);
+	//OutputLink(head);
+	//DestroyLink(head);
 
 	system("pause");
 	return 0;
