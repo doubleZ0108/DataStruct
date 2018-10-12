@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef int bool;	//emmmm自定义布尔类型
+#define BACK 0		//后插为0
+#define FRONT 1		//前插为1
+
 struct Student
 {
 	int num;
@@ -16,6 +20,8 @@ struct NODE
 struct NODE *CreateLink()
 {
 	struct NODE *head = malloc(sizeof*head);
+	//设置头结点的目的是 当需要知道当前操作结点的上一个结点的地址
+	//可以用move->next作为循环判断的依据从而用move可以当做当前处理结点的上一个结点
 	if (NULL == head)
 	{
 		printf("Memory Alloction Failed!\n");
@@ -44,9 +50,11 @@ struct NODE *CreateLink()
 	return head;
 }
 /*让用户输入结点信息*/
-void InputLink(const struct NODE *head)
+void Init(const struct NODE *head)
 {
-	struct NODE *move = head->next;
+	struct NODE *move = head->next;		
+	//永远不要试图移动头指针,因为头指针为一确定一个链表,移动了的话会导致整个链表错乱
+	//定义一个指针让他和头指针指向相同(即所指的内容相同,让他代替头指针移动
 
 	for (int i = 1; move != NULL; ++i, move = move->next)
 	{
@@ -66,12 +74,51 @@ void OutputLink(const struct NODE *head)
 	printf("[^]\n");
 }
 
+/*插入结点*/			//通过flag控制前插or后插
+void InsertLink(const struct NODE *head, bool flag)
+{
+	struct NODE *move = (flag ? head : head->next);
+	//前插法只能初始化为头结点,要不然这个结点之前的信息是拿不到的
+	//后插发直接声明为首结点方便使用就行
+
+	int index;
+	printf("你想在第几个结点");printf(flag==FRONT ? "前" : "后");printf("插入: ");
+	scanf("%d", &index);
+
+	for (int i = 1; (flag==FRONT ? move->next:move) != NULL; move = move->next, ++i)
+		//如果是前插法,那就是当前结点的下一个结点是否为NULL来判定结束
+	{
+		if (i == index)
+		{
+			struct NODE *fresh = malloc(sizeof*fresh);
+			if (NULL == fresh)
+			{
+				printf("Memory Alloction Failed!\n");
+				exit(-1);
+			}
+
+			printf("请输入新的结点信息: ");
+			scanf("%d", &fresh->data);
+
+			fresh->next = move->next;	//一定是新结点先链到后面,在把前面链到新结点上
+			move->next = fresh;			//否则前面先链到新结点上,后面的链就找不到了
+			
+			return;
+		}
+	}
+}
+
 int main(void)
 {
 	struct NODE *head = CreateLink();
 
-	InputLink(head);
+	Init(head);
 	OutputLink(head);
+
+	/*InsertLink(head, BACK);
+	OutputLink(head);
+	InsertLink(head, FRONT);
+	OutputLink(head);*/
 
 	system("pause");
 	return 0;
