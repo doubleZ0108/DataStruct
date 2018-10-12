@@ -43,8 +43,8 @@ struct NODE *CreateLink()
 			exit(-1);
 		}
 
-		move->next = fresh;
-		fresh->next = NULL;
+		move->next = fresh;		//先把新结点链到链上
+		fresh->next = NULL;		//这句很重要,把最后的结点指向NULL以示链表结束
 	}
 
 	return head;
@@ -56,7 +56,7 @@ void Init(const struct NODE *head)
 	//永远不要试图移动头指针,因为头指针为一确定一个链表,移动了的话会导致整个链表错乱
 	//定义一个指针让他和头指针指向相同(即所指的内容相同,让他代替头指针移动
 
-	for (int i = 1; move != NULL; ++i, move = move->next)
+	for (int i = 1; move != NULL; ++i, move = move->next)	//别忘了递增i emmmmmm
 	{
 		printf("请输入第%d个结点的信息: ", i);
 		scanf("%d", &move->data.num);
@@ -79,7 +79,7 @@ void InsertLink(const struct NODE *head, bool flag)
 {
 	struct NODE *move = (flag ? head : head->next);
 	//前插法只能初始化为头结点,要不然这个结点之前的信息是拿不到的
-	//后插发直接声明为首结点方便使用就行
+	//后插法直接声明为首结点方便使用就行
 
 	int index;
 	printf("你想在第几个结点");printf(flag==FRONT ? "前" : "后");printf("插入: ");
@@ -122,7 +122,7 @@ void DeleteLink(const struct NODE *head)
 	{
 		if (i == index)
 		{
-			struct NODe *save = move->next;
+			struct NODE *save = move->next;		//把要删的结点先保存下来,要不直接改指针就找不到它了
 			move->next = move->next->next;
 			free(save);
 			save = NULL;
@@ -144,7 +144,7 @@ void DestroyLink(struct NODE *head)
 		free(save);
 		save = NULL;
 	}
-	if (head == NULL)
+	if (head == NULL)		//如果头结点是NULL了,就代表链表是真的空了
 	{
 		printf("链表已销毁!\n");
 	}
