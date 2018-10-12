@@ -156,41 +156,85 @@ void InsertSort(int arr[], int size)
 	printf("after InsertSort: ");
 	OutputArray(arr, size);
 }
-/*快速排序*/
+/*快速排序*/        //主要用于数据量很多,不是数据的值很大
 void QuickSort(int arr[], int size, int low, int high)
+//分治的思想, 舞动算法
+//以一个数为基准,把比他小的都扔到左边,大的都扔到右边
+//然后再在左右两边分别重复这个操作
+//直至每一个分区的基准数的左边或右边都只剩一个数为止
+/*
+(1)设置两个变量i,j,排序开始时,i=0,j=n-1
+(2)以数组的第一个元素为基准key
+(3)从后往前搜索,找到第一个小于基准的值arr[j],将arr[j]和arr[i]互换
+(4)然后再从前往后搜索,找到第一个大于基准的值arr[i],将arr[i]和arr[j]互换
+(5)重复(3)(4),直到i==j,此时就能保证基准左边全比自己小,右边全比自己大
+
+然后再分别对左右两部分分别递归执行上面的步骤,直到排序结束
+*/
 {
-	int i = low, j = high;
-	int key = arr[low];
+	int i = low, j = high;	//将ij作为所谓的舞动变量
+	int key = arr[low];		
+	//每次都把这一部分的第一个元素当做基准,这样做只是为了方便
+	//事实上最好的方法应该是选一个不大不小的数作为基准
+	//(比如:选第一个,最后一个,中间一个, 把和三个数里中间大小的那个数作为基准) 起码不会是两个极端
+	//如果恰巧这个key是这一组数里最大的,那么所有的数都要放到他左边,也是很烦的一件事情
+	//再次说明,这里只是为了方便
 
-	if (low >= high) { return; }
+	if (i >= j) { return; }		//如果舞动到中间了就退出这层函数
 
-	while (low < high)
+	/*基础的实现方法,换来换去*/
+	while (i < j)
 	{
-		while (low < high && arr[high] >= key)
+		while (i < j && arr[j] >= key) { --j; }
+		if (arr[j] < key)
 		{
-			--high;
+			int buf = arr[i];
+			arr[i] = arr[j];
+			arr[j] = buf;
 		}
-		if (arr[high] < key)
+		while (i < j && arr[i] <= key) { ++i; }
+		if (arr[i] > key)
 		{
-			arr[low] = arr[high];
-			++low;
-		}
-		while (low < high && arr[low] <= key)
-		{
-			++low;
-		}
-		if (arr[low] > key)
-		{
-			arr[high] = arr[low];
-			--high;
+			int buf = arr[j];
+			arr[j] = arr[i];
+			arr[i] = buf;
 		}
 	}
 
-	arr[low] = key;
-	QuickSort(arr,size, i, low - 1);
-	QuickSort(arr,size, low + 1, j);
+	/*优化版本*/
+	/*
+	思想主要是: 事实上每次交换都是同key来交换
+	而每一轮比较有且仅有一个key值,但是key的位置是不断变化的,只有比较完一轮后key的
+	位置才固定. 所以既然key的位置是动来动去的,那就干脆不把他赋到数组中,等最后一轮结束后,
+	它的位置不动了,再将他赋到数组中
+	*/
+	//while (i < j)
+	//{
+	//	//这里的while也要做限定,因为ij随时有可能汇合
+	//	while (i < j && arr[j] >= key) 
+	//	{ 
+	//		--j;		//如果从好往前找一直是比基准大,那就不用动,继续往前搜索
+	//	}
+	//	if (arr[j] < key)
+	//	{
+	//		arr[i] = arr[j];		//直接赋值,不用交换
+	//		++i;
+	//	}
+	//	while (i < j && arr[i] <= key) { ++i; }
+	//	if (arr[i] > key)
+	//	{
+	//		arr[j] = arr[i];
+	//		--j;
+	//	}
+	//}
+	//arr[i] = key;		//最后key值归位,此时key值将序列分为左右两部分
 
-	if (high + 1 == size)
+
+	QuickSort(arr, size, low, i - 1);	//这就是之前为什么用ij来循环而不用high和low的原因
+	QuickSort(arr, size, i + 1, high);	//对右边在递归的排序
+
+	if (i + 1 == size)
+		//如果这层函数是第一层,就输出排序结果
 	{
 		printf("after QuickSort: ");
 		OutputArray(arr, size);
@@ -202,10 +246,10 @@ int main(void)
 	int arr[] = { 1,5,8,34,124,6543,124678,2346,12,-76,-3,0,35, 99 };
 	int size = sizeof(arr) / sizeof(arr[0]);
 
-	/*Reverse(arr, size);
-	BubbleSort(arr, size);
-	BinarySearch(arr, size, 124678);
-	Delete(arr, &size, 4);*/
+	//Reverse(arr, size);
+	//BubbleSort(arr, size);
+	//BinarySearch(arr, size, 124678);
+	//Delete(arr, &size, 4);
 	//InsertSort(arr, size);
 	//SelectSort(arr, size);
 	//QuickSort(arr, size, 0, size - 1);
