@@ -50,7 +50,7 @@ struct NODE *CreateLink()
 	return head;
 }
 /*让用户输入结点信息*/
-void Init(const struct NODE *head)
+void InitLink(const struct NODE *head)
 {
 	struct NODE *move = head->next;		
 	//永远不要试图移动头指针,因为头指针为一确定一个链表,移动了的话会导致整个链表错乱
@@ -73,6 +73,7 @@ void OutputLink(const struct NODE *head)
 	}
 	printf("[^]\n");
 }
+
 
 /*插入结点*/			//通过flag控制前插or后插
 void InsertLink(const struct NODE *head, bool flag)
@@ -150,11 +151,46 @@ void DestroyLink(struct NODE *head)
 	}
 }
 
+
+/*冒泡排序*/
+void BubbleSort(const struct NODE *head)
+//思想还是比较n-1轮,每一轮把最大的交换到最后面
+//交换意味着整个链没有变,只是结点中的数据部分交换
+{
+	struct NODE *turn, *move;
+	struct NODE *save = NULL;	//用于优化,每一轮之后后面的元素已经是排好序的了,不需要再比较了
+	struct Student buf;			//交换数据部分时的中间变量
+
+	for (turn = head->next; turn->next != NULL; turn = turn->next)
+		//n个结点只需比较n-1轮,而turn开始初始为首结点
+		//所以只需要比到尾结点的前一个结点就行了
+	{
+		for (move = head->next; move->next != save; move = move->next)
+			//每一轮都是从头(首结点)开始比较
+			//因为是同下一个比较,所以要写成move->next != save
+			//否则最后一个结点就会同NULL比较
+		{
+			if (move->data.num > move->next->data.num)
+			{
+				buf = move->data;
+				move->data = move->next->data;
+				move->next->data = buf;
+			}
+		}
+
+		save = move;	//每轮比较完保存冒到最右边结点的地址
+						//下一轮只需比较到该结点的前一个结点即可
+	}
+}
+/*插入排序*/
+/*选择排序*/
+/*快速排序*/
+
 int main(void)
 {
 	struct NODE *head = CreateLink();
 
-	Init(head);
+	InitLink(head);
 	OutputLink(head);
 
 	//InsertLink(head, BACK);
@@ -163,8 +199,10 @@ int main(void)
 	//OutputLink(head);
 	//DeleteLink(head);
 	//OutputLink(head);
-	//DestroyLink(head);
+	
+	//BubbleSort(head);
 
+	DestroyLink(head);
 	system("pause");
 	return 0;
 }
