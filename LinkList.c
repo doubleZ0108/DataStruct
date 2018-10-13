@@ -183,6 +183,83 @@ void BubbleSort(const struct NODE *head)
 	}
 }
 /*插入排序*/
+void InsertSort(const struct NODE *head)
+//书上的标准插入排序算法
+{
+	struct NODE *turn, *move;
+	struct NODE *left = head->next, *right = NULL;
+	//left先要初始化为首结点,因为是在下一次循环开始前才给left赋值,所以要有一个初始值
+
+	for (turn = head->next->next; turn != NULL; turn = turn->next)
+		//从第二个结点开始,直接用turn来指
+	{
+		for (move = head; move->next != turn; move = move->next)
+			//因为是前插法,所以用move->next来指
+		{
+			if (move->next->data.num > turn->data.num)
+			{
+				right = turn->next;
+
+				turn->next = move->next;
+				move->next = turn;
+				left->next = right;
+
+				turn = left;	//核心所在
+				//turn的指向因为往前插所以改变了,所以要再把它移回来
+				//而left是没动位置的,所以移到它,下一轮就是back这个结点了
+
+				break;
+			}
+		}
+		left = turn;	//因为是用turn来指,所以下一轮循环开始之前要先储存下left
+						//这也是为什么要给left初始化的原因了
+	}
+}
+//void InsertSort(const struct NODE *head)
+////链表的插入排序非常玄学的存在
+////思想和数组的插入排序差不多,也是从第二个开始一次出来在前面找位置插进去
+////主要不同在于,链表只能从首结点往后一个一个找,不能像数组那样直接往回找
+////还有就是这个不同于往链表中插入一个不相干的新结点
+////插入排序是把某个结点插入到前面的某个位置,因此动的指针会多一点
+////卡主的地方是  把这个结点拿到前面了,turn就自动往后移了
+//{
+//	struct NODE *turn, *move;
+//	struct NODE *left, *right, *save;
+//
+//	for (turn = head->next; turn->next != NULL; )
+//		//从第二个结点开始依次在前面找位置
+//		//用turn->next来指主要是要获取前一个结点
+//	{
+//		left = turn;
+//		save = turn->next;
+//		right = turn->next->next;
+//
+//		for (move = head; move->next != save; move = move->next)
+//			//每次都只能从首结点开始找位置
+//			//这是前插法,所以用move->next来指
+//		{
+//			if (move->next->data.num > turn->next->data.num)
+//			{
+//				save->next = move->next;
+//				move->next = save;
+//
+//				left->next = right;		//记录left和right的目的就在此
+//										//如果不提前记录左右指针,会使链表进入循环
+//										//其实就是把后面的链丢了
+//				break;	//找到了别忘退出
+//			}
+//		}
+//
+//		if (move == left)		//卡住的地方: 把这个结点拿到前面了,turn就自动往后移了
+//			//如果找了一圈还没找到,就意味着这个元素在当前最大,不用换位置
+//			//因此这个时候把turn往后挪一个
+//			//否则的话,因为把这个结点拿到前面的位置了
+//			//turn已经自动往后挪了,就不用再人工挪了
+//		{
+//			turn = turn->next;
+//		}
+//	}
+//}
 /*选择排序*/
 /*快速排序*/
 
@@ -201,6 +278,9 @@ int main(void)
 	//OutputLink(head);
 	
 	//BubbleSort(head);
+	//InsertSort(head);
+	OutputLink(head);
+
 
 	DestroyLink(head);
 	system("pause");
