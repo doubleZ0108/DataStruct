@@ -291,7 +291,60 @@ void SelectSort(const struct NODE *head)
 	}
 }
 /*快速排序*/
+void QuickSort(struct NODE *head, struct NODE *tail)
+{
+	//只能先定义后初始化
+	//因为要先判断是否递归结束,如果直接赋值可能会出现  NULL->next 这种非法的情况
+	struct NODE *move, *front, *back;
+	struct NODE *key;		//保存基准结点
 
+	if (head->next == tail || head->next->next == tail)
+		//快速排序一直递归到基准点左右没有数据或只有一个数据为止
+		//同时注意head->next才表示第一个有效数据,head是头结点
+	{
+		return;
+	}
+
+	key = head->next;		//每一轮的基准定为首结点(head->next
+	move = key->next;		//每一轮从第二个结点开始比较用不用插到前面去
+	front = key;
+	back = key->next->next;
+
+	while (move != tail)
+	{
+		if (move->data.num < key->data.num)
+		{
+			/*类似于插入排序的,链表结点的前插三部曲*/
+			move->next = head->next;	//前插的时候我们直接插到最前面,head后面
+			head->next = move;
+			front->next = back;
+
+			//有点类似于数组的快速排序中在循环内部还要时时的检测是不是该退出了
+			if (!back) { break; }
+
+			move = back;	//这句很重要
+							//往前插后move的指向会跟着移到前面,要将它再移回来
+
+			back = back->next;
+		}
+		else
+			//如果当前值比基准值大则不用动
+			//直接把move,front,back三个指针都往后移一个,准备下一次比较就行了
+		{
+			//有点类似于数组的快速排序中在循环内部还要时时的检测是不是该退出了
+			if (!back) { break; }
+			else
+			{
+				move = move->next;
+				front = front->next;
+				back = back->next;
+			}
+		}
+	}
+
+	QuickSort(head, key);
+	QuickSort(key, tail);
+}
 int main(void)
 {
 	struct NODE *head = CreateLink();
@@ -308,9 +361,10 @@ int main(void)
 	
 	//BubbleSort(head);
 	//InsertSort(head);
-	SelectSort(head);
-	OutputLink(head);
-
+	//SelectSort(head);
+	//QuickSort(head, NULL);
+	
+	//OutputLink(head);
 
 	DestroyLink(head);
 	system("pause");
