@@ -261,6 +261,35 @@ void InsertSort(const struct NODE *head)
 //	}
 //}
 /*选择排序*/
+void SelectSort(const struct NODE *head)
+//思路和数组的选择排序一样
+//只是注意,选择排序的方法同冒泡一样,也是交换而不是插入
+{
+	struct NODE *turn, *move, *max;
+	struct Student buf;
+
+	for (turn = head->next; turn->next != NULL; turn = turn->next)
+		//n个结点只需比较n-1轮
+	{
+		max = turn;
+		for (move = turn->next; move != NULL; move = move->next)
+		{
+			if (move->data.num > max->data.num)
+			{
+				max = move;
+			}
+		}
+
+		if (max != turn)
+			//如果max值更换了,也就是后面有比max更大的结点
+			//那就把它和当前没排好序序列的第一个元素交换,是交换
+		{
+			buf = max->data;
+			max->data = turn->data;
+			turn->data = buf;
+		}
+	}
+}
 /*快速排序*/
 
 int main(void)
@@ -279,6 +308,7 @@ int main(void)
 	
 	//BubbleSort(head);
 	//InsertSort(head);
+	SelectSort(head);
 	OutputLink(head);
 
 
