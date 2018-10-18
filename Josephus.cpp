@@ -5,10 +5,12 @@ using namespace std;
 //用重载函数实现两种不同结构的 约瑟夫问题
 typedef int LINKLIST;
 typedef char ARRAY;		//结尾的 ; 别忘了emmmmmmmmm
+typedef double CIRLIST;
 
 struct NODE
 {
 	int data;
+	struct NODE *prior;
 	struct NODE *next;
 };
 struct NODE *CreateLink(int total)
@@ -163,6 +165,66 @@ void Josephus(ARRAY flag,int total,int first,int gap)
 	arr = NULL;
 }
 
+struct NODE *CreateCirLink(int total)
+{
+	struct NODE *head = new NODE;
+	struct NODE *move = head;
+	move->next = NULL;
+
+	for (int i = 1; i <= total; ++i, move = move->next)
+	{
+		struct NODE *fresh = new NODE;
+		fresh->data = i;		//别忘了把编号填到链表里
+
+		move->next = fresh;
+		fresh->next = NULL;
+
+		fresh->prior = move;		//与单链表比,只增加了这一句
+	}
+
+	move->next = head->next;		//把尾结点链到首结点上
+	head->next->prior = move;		//首结点链到尾结点上
+
+	return head;
+}
+void Josephus(CIRLIST flag, int total, int first, int gap)
+{
+	struct NODE *head = CreateCirLink(total);
+	struct NODE *move = head->next;
+	struct NODE *save;
+
+	for (int i = 1; i < first; ++i)
+	{
+		move = move->next;
+	}
+
+	while (move != move->next)
+		//判空条件为链表中是否只剩下一个储存有效数据的结点
+	{
+		for (int i = 1; i < gap; ++i)
+		{
+			move = move->next;
+		}
+
+		save = move;
+
+		//双向链表的删除操作
+		move->prior->next = move->next;
+		move->next->prior = move->prior;
+
+		move = move->next;		//别忘了移动到下一个人
+
+		printf("%d ", save->data);
+
+		delete save;
+		save = NULL;
+	}
+	printf("%d\n", move->data);
+
+	delete move, head;
+	move = head = NULL;
+}
+
 int main(void)
 {
 	int total, first, gap;
@@ -172,12 +234,16 @@ int main(void)
 
 	LINKLIST flag_list = 0;
 	ARRAY flag_array = '\0';
+	CIRLIST flag_cirlist = 0.0;
 
-	printf("\n********用链表实现约瑟夫生死环*********\n");
+	printf("\n********用单循环链表实现约瑟夫生死环*********\n");
 	Josephus(flag_list,total,first,gap);
 
 	printf("\n********用数组实现约瑟夫生死环*********\n");
 	Josephus(flag_array,total,first,gap);
+
+	printf("\n********用双向循环链表实现约瑟夫生死环*********\n");
+	Josephus(flag_cirlist, total, first, gap);
 
 	system("pause");
 	return 0;
