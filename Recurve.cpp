@@ -36,6 +36,24 @@ void Hanoi(int n, char A, char B, char C)
 		Hanoi(n - 1, B, A, C);			//第(3)步
 	}
 }
+
+void refunc(int A[], int n)
+{
+	if (n >= 0)
+	{
+		cout << A[n] << ' ';
+		n--;
+		refunc(A, n);
+	}
+}
+void iterfunc(int A[], int n)
+{
+	while (n >= 0)
+	{
+		cout << A[n] << ' ';
+		n--;
+	}
+}
 int main(void)
 {
 	/*斐波那契数列*/
@@ -47,6 +65,16 @@ int main(void)
 	cout << "*** the process of 5th Hanoi " << endl;
 	Hanoi(5, 'A', 'B', 'C');
 	
+	/*尾递归改成循环*/
+	int arr[] = { 1,2,3,4,5,6, };
+	int size = sizeof(arr) / sizeof(arr[0]);
+	cout << "**** recurve to reverse output array: ";
+	refunc(arr, size-1);
+	cout << endl << "**** loop to reverse output array: ";
+	iterfunc(arr, size - 1);
+	cout << endl;
+
+
 	system("pause");
 	return 0;
 }
