@@ -6,7 +6,7 @@
 #include <cstdlib>
 #include <queue>
 using namespace std;
-#define ROW 10
+#define ROW 10		//杨辉三角总行数
 
 typedef int QUEUE;
 typedef double ARRAY;
@@ -15,6 +15,8 @@ void PascalTriangle(QUEUE flag)
 //用队列实现二项展开式系数
 //打印上一行的同时, 把下一行的值加入到队列中
 {
+	cout << "This is queue solution for Pascal Triangle: " << endl;
+
 	queue<int> que;
 	que.push(1); que.push(1);	//事先放入第一行的两个1
 
@@ -45,13 +47,43 @@ void PascalTriangle(QUEUE flag)
 
 }
 
+void PascalTriangle(ARRAY flag)
+//arr[i][j] = arr[i - 1][j] + arr[i - 1][j - 1];
+//除特殊情况外,当前元素等于 它上面的元素+它左上的元素
+{
+	cout << "This is array solution for Pascal Triangle: " << endl;
+	int arr[ROW][ROW] = { 0 };
 
+	for (int i = 0; i < ROW; ++i)
+	{
+		for (int j = 0; j <=i ; ++j)
+			//只处理和打印一半二维数组
+		{
+			if (j == 0 || j == i) { arr[i][j] = 1; }	//第一数列和对角线元素都为1
+			else
+			{
+				arr[i][j] = arr[i - 1][j] + arr[i - 1][j - 1];
+			}
+		}
+	}
+
+	for (int i = 0; i < ROW; ++i)
+	{
+		for (int j = 0; j <= i; ++j)
+		{
+			cout << arr[i][j] << ' ';
+		}
+		cout << endl;
+	}
+}
 int main(void)
 {
 	QUEUE flag_queue = 0;
 	ARRAY flag_array = 0.0;
 
 	PascalTriangle(flag_queue);
+	cout << endl;
+	PascalTriangle(flag_array);
 
 	system("pause");
 	return 0;
