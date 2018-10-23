@@ -345,6 +345,32 @@ void QuickSort(struct NODE *head, struct NODE *tail)
 	QuickSort(head, key);
 	QuickSort(key, tail);
 }
+
+/*递归的方法查找链表中的元素*/
+void FindInList(struct NODE *head, int x)
+{
+	if (head)
+		//没到链表的结尾
+	{
+		if (head->data.num == x)
+			//如果找到目标值退出递归调用一直往回返
+		{
+			printf("The elems is found!\n");
+			return;
+		}
+		else
+		{
+			FindInList(head->next, x);
+				//递归的查找子链
+		}
+	}
+	if (!head)
+		//如果一直递归到了链表的结尾还没return, 那就意味着没有该元素
+	{
+		printf("Sorry the elem is not found!\n");
+	}
+}
+
 int main(void)
 {
 	struct NODE *head = CreateLink();
@@ -365,6 +391,8 @@ int main(void)
 	//QuickSort(head, NULL);
 	
 	//OutputLink(head);
+
+	FindInList(head->next, 99);
 
 	DestroyLink(head);
 	system("pause");
