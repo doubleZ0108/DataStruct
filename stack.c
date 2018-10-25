@@ -15,9 +15,11 @@ struct NODE
 };
 struct STACK
 {
-	struct NODE *bottom, *top;
+	struct NODE *bottom;
+	struct NODE *top;
 };
 
+/*创建空栈*/
 struct STACK* CreateStack(void)
 {
 	struct STACK *stack = malloc(sizeof*stack);
@@ -32,23 +34,49 @@ struct STACK* CreateStack(void)
 
 	return stack;
 }
-bool isEmpty(struct STACK *stack)
-{
-	return stack->top == stack->bottom;
-}
-void Push(struct NODE* *top)
+
+/*压栈*/
+void Push(struct NODE* *ptop)
 //top的类型是struct NODE*
 //想直接修改top的值就还要传递top的地址
 {
 	struct NODE *fresh = malloc(sizeof*fresh);
+	if (!fresh)
+	{
+		printf("Memory alloctioin failed\n");
+		exit(-1);
+	}
 
 	printf("请输入进栈结点的信息: ");
 	scanf("%d", &fresh->data.num);
 
-	fresh->next = *top;
-	*top = fresh;
+	fresh->next = *ptop;		//插在当前的栈顶上面
+	*ptop = fresh;			//更新栈顶
 }
-void OutputStack(struct STACK *stack)
+/*出栈*/
+void Pop(const struct Stack* stack, struct NODE* *ptop)
+//注意ptop这里是栈顶指针的指针
+{
+	if (!isEmpty(stack))
+	{
+		struct NODE *save = *ptop;
+		*ptop = (*ptop)->next;
+		free(save);
+		save = NULL;
+	}
+	else
+	{
+		printf("栈空!\n");
+	}
+}
+
+/*栈是否为空*/
+bool isEmpty(const struct STACK *stack)
+{
+	return stack->top == stack->bottom;
+}
+/*从上到下输出栈中的所有内容*/
+void OutputStack(const struct STACK *stack)
 {
 	struct NODE *move = stack->top;
 
@@ -58,15 +86,68 @@ void OutputStack(struct STACK *stack)
 	}
 	printf("|_|\n");
 }
+/*清空整个栈*/
+void DestroyStack(struct STACK *stack)
+//销毁就是不停的出栈,知道栈为空
+{
+	while (!isEmpty(stack))
+		//也可以直接写成 while(stack->top != stack->bottom)
+	{
+		Pop(stack, &stack->top);		//因为这里要用到Pop函数,所以必须把Pop写在前面
+								//emmmmm这个bug找了好久, 一直显示的是重定义
+	}
+	if (stack->bottom==stack->bottom)
+	{
+		printf("栈已销毁\n");
+	}
+}
+/*取出栈顶元素*/
+void GetTop(const struct NODE *top)
+{
+	printf("top is %d\n", top->data.num);
+}
+
+
 int main(void)
 {
 	struct STACK *stack = CreateStack();
-	Push(&stack->top);
-	Push(&stack->top);
-	Push(&stack->top);
-	Push(&stack->top);
+	
+	int OperCode;
+	while (1)
+	{
+		printf("你想进行什么操作: 1取栈顶元素, 2压栈, 3出栈, 4输出整个栈, 0结束操作 ");
+		scanf("%d", &OperCode);
 
-	OutputStack(stack);
+		if (!OperCode){ break; }
+
+		switch (OperCode)
+		{
+		case 1:
+		{
+			GetTop(stack->top);
+			break;
+		}
+		case 2:
+		{
+			Push(&stack->top);
+			break;
+		}
+		case 3:
+		{
+			Pop(stack, &stack->top);
+			break;
+		}
+		case 4:
+		{
+			OutputStack(stack);
+			break;
+		}
+		default:printf("请重新输入!\n"); break;
+		}
+	}
+
+
+	DestroyStack(stack);
 	system("pause");
 	return 0;
 }
