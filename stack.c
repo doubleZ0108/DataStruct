@@ -102,9 +102,19 @@ void DestroyStack(struct STACK *stack)
 	}
 }
 /*取出栈顶元素*/
-void GetTop(const struct NODE *top)
+void GetTop(const struct STACK *stack)
+//注意这里参数改成了stack
+//因为要判断是否为空, 既然stack里有top指针, 干脆就传递stack了
+//反正都是一个指针的大小, 而无论是指向什么的指针的都是同样大小的
 {
-	printf("top is %d\n", top->data.num);
+	if (!isEmpty(stack))
+	{
+		printf("top is %d\n", stack->top->data.num);
+	}
+	else
+	{
+		printf("栈空!\n");
+	}
 }
 
 
@@ -124,7 +134,7 @@ int main(void)
 		{
 		case 1:
 		{
-			GetTop(stack->top);
+			GetTop(stack);
 			break;
 		}
 		case 2:
