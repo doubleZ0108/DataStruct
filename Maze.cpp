@@ -19,9 +19,9 @@ struct Offsets
 	Point pos;			//方向向量
 	const char *dir;	//方向名字
 };
-Offsets Move[8] = { { Point(-1,0),"N"},{ Point(-1,1),"NE"},{ Point(0,1),"E"},{ Point(1,1),"SE"},
-					{ Point(1,0),"S"},{ Point(1,-1),"SW"},{ Point(0,-1),"W"},{ Point(-1,-1),"NW"} };
-	//八个方位的向量
+Offsets Move[4] = { { Point(-1,0),"N"},{ Point(0,1),"E"},
+					{ Point(1,0),"S"},{ Point(0,-1),"W"}, };
+	//四个方位的向量
 
 bool SeekPath(Point now, const Point dest, 
 	vector<vector<int> > &Maze, vector<vector<int> > &mark, list<Point> &AccessLink)
@@ -31,8 +31,8 @@ bool SeekPath(Point now, const Point dest,
 
 	if (now == dest) { return true; }	//如果找到终点了就退出递归并返回true
 
-	for (int i = 0; i < 8; ++i)
-		//8个方向都尝试一遍能不能走
+	for (int i = 0; i < 4; ++i)
+		//4个方向都尝试一遍能不能走
 	{
 		buf.pos.x = now.x + Move[i].pos.x;
 		buf.pos.y = now.y + Move[i].pos.y;
