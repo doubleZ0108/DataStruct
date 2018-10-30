@@ -135,6 +135,12 @@ void LinkList::InitLink()
 
 void LinkList::OutputLink()
 {
+	if (this->_size == 0)
+	{
+		cout << "考生信息为空!\n";
+		return;
+	}
+
 	NODE *move = head->next;
 		//用move指向每一个链表的结点, 初始化为首结点
 	printf("\n考号   姓名   性别   年龄   报考类型\n");
@@ -280,6 +286,11 @@ void StuSystem()
 	int size;
 	cout << "请输入考生人数: ";
 	cin >> size;
+	while (size <= 0)
+	{
+		cout << "考生人数非法,请重新输入考生人数: ";
+		cin >> size;
+	}
 
 	//创建长度为size的链表
 	LinkList list(size);
