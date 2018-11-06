@@ -6,35 +6,27 @@
 #include <cctype>
 using namespace std;
 
-union chORstr
-{
-	char ch;
-	string str;
-};
 class Express
 {
 private:
-	string _express;
-	int _current = 0;
-	string _next;
-	string _result;
+	string _express;		//储存中序表达式
+	int _current = 0;		//表达式的定位变量
+	string _next;			//下一个内容
+	string _result;			//储存后续表达式
 
-	stack<char> OpCode;
-	string result;
+	stack<char> OpCode;		//操作符栈
+
 public:
 	Express() = default;
-	Express(string &buf) :_express(buf) 
-	{ 
-		_express.push_back(' '); 
-		_express.push_back('#'); 
-		_express.push_back(' ');
-	}	//在结尾加一个空格
+	Express(string &buf);
+
 	void NextContent();		//寻找下一个对象
-	void Change();
-	void ShowResult();
+	void Change();			//将中序表达式转化为后续表达式
+	void ShowResult();		//输出结果(结尾不能有空格)
 };
 
 int isp(char ch)
+//栈内优先级
 {
 	switch (ch)
 	{
@@ -46,6 +38,7 @@ int isp(char ch)
 	}
 }
 int icp(char ch)
+//栈外优先级
 {
 	switch (ch)
 	{
@@ -58,12 +51,14 @@ int icp(char ch)
 }
 
 bool MyisNum(string &buf)
+//用于判断当前对象是否为一个数字
+//数字包括 正数 负数 浮点数 (其中+3要进行特殊处理)
 {
 	char ch = buf[0];
 	if (ch == '+' && buf.size() > 1)
 		// 如 +3 就是储存 3
 	{
-		buf.erase(0, 1); //把+删除
+		buf.erase(0, 1);	//把+删除
 		ch = buf[0];		//更新一下ch
 	}
 
@@ -90,6 +85,15 @@ int main(void)
 	return 0;
 }
 
+Express::Express(string & buf)
+//对表达式进行一些处理,在结尾添加下面内容用于判断终止
+	:_express(buf)
+{
+	_express.push_back(' ');
+	_express.push_back('#');
+	_express.push_back(' ');
+}
+
 void Express::NextContent()
 {
 	_next.clear();	//每次找下一个内容先把_next清空
@@ -114,6 +118,7 @@ void Express::Change()
 {
 	OpCode.push('#');
 	NextContent();
+
 	while (!OpCode.empty())
 	{
 		char ch = _next[0];
@@ -121,8 +126,8 @@ void Express::Change()
 		if (MyisNum(_next))
 		{
 			//cout << _next << ' ';
-			result.append(_next);
-			result.push_back(' ');
+			_result.append(_next);
+			_result.push_back(' ');
 			NextContent();
 		}
 		else if (ispunct(ch))
@@ -136,8 +141,8 @@ void Express::Change()
 			else if (isp(topch) > icp(ch))
 			{
 				//cout << OpCode.top() << ' ';
-				result.push_back(OpCode.top());
-				result.push_back(' ');
+				_result.push_back(OpCode.top());
+				_result.push_back(' ');
 				OpCode.pop();
 			}
 			else
@@ -154,8 +159,9 @@ void Express::Change()
 }
 
 void Express::ShowResult()
+//结尾空格不输出
 {
-	for (char *pch = &result[0]; pch < &result[0] + result.size() - 1; ++pch)
+	for (char *pch = &_result[0]; pch < &_result[0] + _result.size() - 1; ++pch)
 	{
 		cout << *pch;
 	}
