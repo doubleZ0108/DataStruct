@@ -13,7 +13,7 @@ private:
 	string _next;
 	string _result;
 
-	stack<string> OpNum;
+	//stack<string> OpNum;
 	stack<char> OpCode;
 public:
 	Express() = default;
@@ -21,9 +21,49 @@ public:
 	void NextContent();		//寻找下一个对象
 	void Change();
 
-	void showNum();
-	void showCode();
 };
+
+int isp(char ch)
+{
+	switch (ch)
+	{
+	case '#':return 0;
+	case '(':return 1;
+	case '*':case '/':return 5;
+	case '+':case '-':return 3;
+	case ')':return 6;
+	}
+}
+int icp(char ch)
+{
+	switch (ch)
+	{
+	case '#':return 0;
+	case '(':return 6;
+	case '*':case '/':return 4;
+	case '+':case '-':return 2;
+	case ')':return 1;
+	}
+}
+
+bool MyisNum(string &buf)
+{
+	char ch = buf[0];
+	if (ch == '+' && buf.size() > 1)
+		// 如 +3 就是储存 3
+	{
+		buf.erase(0, 1); //把+删除
+		ch = buf[0];		//更新一下ch
+	}
+
+	if (isdigit(ch) || (ch == '-' && buf.size()>1))
+		//储存各种数字, 包括正数,负数,浮点数
+	{
+		return true;
+	}
+
+	return false;
+}
 int main(void)
 {
 	string buf;
@@ -32,8 +72,6 @@ int main(void)
 
 	Express express(buf);
 	express.Change();
-	express.showNum();
-	express.showCode();
 
 	system("pause");
 	return 0;
@@ -61,48 +99,40 @@ void Express::NextContent()
 
 void Express::Change()
 {
-	while (_current < _express.size())
+	OpCode.push('#');
+	NextContent();
+	while (!OpCode.empty() && _current < _express.size())
 	{
-		NextContent();
 		char ch = _next[0];
 
-		if (ch == '+' && _next.size() > 1) 
-			// 如 +3 就是储存 3
+		if (MyisNum(_next))
 		{
-			_next.erase(0, 1); //把+删除
-			ch = _next[0];		//更新一下ch
-		}
-
-		if (isdigit(ch) || (ch == '-' && _next.size()>1))
-			//储存各种数字, 包括正数,负数,浮点数
-		{
-			OpNum.push(_next);
+			cout << _next << ' ';
+			NextContent();
 		}
 		else if (ispunct(ch))
 		{
-			OpCode.push(ch);
+			char topch = OpCode.top();
+			if (isp(topch) < icp(ch))
+			{
+				OpCode.push(ch);
+				NextContent();
+			}
+			else if (isp(topch) > icp(ch))
+			{
+				cout << OpCode.top() << ' ';
+				OpCode.pop();
+			}
+			else
+			{
+				if (OpCode.top() == '(')
+				{
+					NextContent();
+				}
+				OpCode.pop();
+			}
 		}
 
 	}
-}
-
-void Express::showNum()
-{
-	while (!OpNum.empty())
-	{
-		cout << OpNum.top() << ' ';
-		OpNum.pop();
-	}
-	cout << endl;
-}
-
-void Express::showCode()
-{
-	while (!OpCode.empty())
-	{
-		cout << OpCode.top() << ' ';
-		OpCode.pop();
-	}
-	cout << endl;
 }
 
