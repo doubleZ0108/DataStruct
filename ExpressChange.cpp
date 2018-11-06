@@ -2,9 +2,15 @@
 #include <cstdlib>
 #include <string>
 #include <stack>
+#include <list>
 #include <cctype>
 using namespace std;
 
+union chORstr
+{
+	char ch;
+	string str;
+};
 class Express
 {
 private:
@@ -13,14 +19,19 @@ private:
 	string _next;
 	string _result;
 
-	//stack<string> OpNum;
 	stack<char> OpCode;
+	string result;
 public:
 	Express() = default;
-	Express(string &buf) :_express(buf) { _express.push_back(' '); }	//在结尾加一个空格
+	Express(string &buf) :_express(buf) 
+	{ 
+		_express.push_back(' '); 
+		_express.push_back('#'); 
+		_express.push_back(' ');
+	}	//在结尾加一个空格
 	void NextContent();		//寻找下一个对象
 	void Change();
-
+	void ShowResult();
 };
 
 int isp(char ch)
@@ -64,6 +75,7 @@ bool MyisNum(string &buf)
 
 	return false;
 }
+
 int main(void)
 {
 	string buf;
@@ -72,6 +84,7 @@ int main(void)
 
 	Express express(buf);
 	express.Change();
+	express.ShowResult();
 
 	system("pause");
 	return 0;
@@ -101,13 +114,15 @@ void Express::Change()
 {
 	OpCode.push('#');
 	NextContent();
-	while (!OpCode.empty() && _current < _express.size())
+	while (!OpCode.empty())
 	{
 		char ch = _next[0];
 
 		if (MyisNum(_next))
 		{
-			cout << _next << ' ';
+			//cout << _next << ' ';
+			result.append(_next);
+			result.push_back(' ');
 			NextContent();
 		}
 		else if (ispunct(ch))
@@ -120,7 +135,9 @@ void Express::Change()
 			}
 			else if (isp(topch) > icp(ch))
 			{
-				cout << OpCode.top() << ' ';
+				//cout << OpCode.top() << ' ';
+				result.push_back(OpCode.top());
+				result.push_back(' ');
 				OpCode.pop();
 			}
 			else
@@ -133,6 +150,14 @@ void Express::Change()
 			}
 		}
 
+	}
+}
+
+void Express::ShowResult()
+{
+	for (char *pch = &result[0]; pch < &result[0] + result.size() - 1; ++pch)
+	{
+		cout << *pch;
 	}
 }
 
