@@ -54,14 +54,54 @@ ElementType DeCirQueue(CirQueue *cqueue)
 
 void showCirQueue(CirQueue *cqueue)
 {
-
+	for (int i = 0; i < MaxSize; ++i)
+	{
+		printf("%d ", cqueue->Data[i]);
+	}
+	printf("\n");
 }
+
 int main(void)
 {
 	CirQueue cqueue;
 	cqueue.front = cqueue.rear = 0;
 
+	int OpCode;
+	ElementType item;
+	int deQvalue;
 
+	while (1)
+	{
+		printf("请输入你想进行的操作: 1入队 2出队 3输出循环队列 0结束操作 ");
+		scanf("%d", &OpCode);
+
+		if (!OpCode) { break; }
+		switch (OpCode)
+		{
+		case 1:
+		{
+			printf("请输入入队元素: ");
+			scanf("%d", &item);
+			EnCirQueue(&cqueue, item);
+			break;
+		}
+		case 2:
+		{
+			deQvalue = DeCirQueue(&cqueue);
+			if (deQvalue != ERROR)
+			{
+				printf("出队元素为%d\n", deQvalue);
+			}
+			break;
+		}
+		case 3:
+		{
+			showCirQueue(&cqueue);
+			break;
+		}
+		default:printf("请重新输入!\n"); break;
+		}
+	}
 
 	system("pause");
 	return 0;
