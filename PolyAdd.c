@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define ERROR 0xdddddddd
 typedef struct PolyNode PolyNode;
 
 struct PolyNode
@@ -92,11 +93,15 @@ PolyNode *PolyAdd(const PolyNode *p1, const PolyNode *p2)
 	//退出while loop意味着有一个多项式被处理完了
 	//接下来做的是把没处理完的那个多项式剩下的一截接上去
 
+	//第一种方法:  把move指针直接也只想后面的链
+	//但是这样做的弊端在于内存的释放有点问题
 	move->next = (p1 ? p1 : p2);
 
+	//第二种方法: 一个一个的Attach
 	//for (; p1 != NULL; p1 = p1->next) { Attach(&move, p1->coef, p1->expon); }
 	//for (; p2 != NULL; p2 = p2->next) { Attach(&move, p2->coef, p2->expon); }
 	//move->next = NULL;		//全部处理完让结果链表尾部指向NULL
+
 
 	//把头上多开辟的空间释放掉, 方便结果的输出
 	//这里链表的第一个结点存放的就是实实在在有意义的数据了
@@ -166,13 +171,18 @@ void showPoly(const PolyNode *head)
 	}
 	printf("\n");
 }
-void deletePoly(PolyNode* *head)
+void deletePoly(PolyNode *head)
 {
 	PolyNode *save;
-	while (*head)
+	while (head)
 	{
-		save = (*head);
-		(*head) = (*head)->next;
+		if (head->next == ERROR) { break; }
+			//由于把一个多项式的剩余部分直接接到了结果多项式尾部
+			//导致有两个指针指向了同一块区域
+			//第一次free调之后, 指针只会变成0xdddddddd, 而不是NULL, 莫名其妙
+
+		save = head;
+		head = head->next;
 		free(save);
 		save = NULL;
 	}
@@ -192,9 +202,9 @@ int main(void)
 	PolyNode *sum = PolyAdd(s1, s2);
 	printf("\n结果多项式为: "); showPoly(sum);
 
-	deletePoly(&s1);
-	deletePoly(&s2);
-	deletePoly(&sum);
+	deletePoly(s1);
+	deletePoly(s2);
+	deletePoly(sum);
 
 	system("pause");
 	return 0;
