@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define ERROR 0xdddddddd
+#define ERROR 0xdddddddd		//被释放过一次的地址
 typedef struct PolyNode PolyNode;
 
 struct PolyNode
@@ -113,6 +113,7 @@ PolyNode *PolyAdd(const PolyNode *p1, const PolyNode *p2)
 }
 
 PolyNode *readPoly()
+//以指数为-1作为读取的终点
 {
 	PolyNode *head = malloc(sizeof*head);
 	PolyNode *move = head;
@@ -136,6 +137,7 @@ PolyNode *readPoly()
 		}
 	}
 
+	//同样的把第一个没储存有意义信息的结点删除掉
 	PolyNode *save = head;
 	head = head->next;
 	free(save);
@@ -150,22 +152,28 @@ void showPoly(const PolyNode *head)
 	for (; move != NULL; move = move->next)
 	{
 		if (move->expon == 0)
+			//常数项单独处理
 		{
 			if(move->coef)
+				//常数项为0则什么也不输出
 			{
 				printf(move->coef > 0? "+%d":"%d", move->coef);
 			}
 		}
 		else if (move == head)
+			//第一项做特殊处理, 因为如果第一项的系数是正的不输出+号
 		{
+			//系数为1和-1做特殊处理
 			if (move->coef == 1) { printf("x^%d", move->expon); }
 			else if (move->coef == -1) { printf("-x^%d", move->expon); }
 			else { printf("%dx^%d", move->coef, move->expon); }
 		}
 		else
 		{
+			//系数为+1和-1做特殊处理
 			if (move->coef == 1) { printf("+x^%d", move->expon); }
 			else if (move->coef == -1) { printf("-x^%d", move->expon); }
+			//如果是整数要加上+号,负数自带-号
 			else{printf(move->coef > 0 ? "+%dx^%d" : "%dx^%d", move->coef, move->expon);}
 		}
 	}
