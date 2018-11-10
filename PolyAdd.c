@@ -1,6 +1,19 @@
 /*
 两个多项式相加
 其中多项式用链表储存
+
+测试数据:
+3 5
+4 4
+-1 3
+2 1
+-1 0
+-1 -1
+2 4
+1 3
+-7 2
+1 1
+-1 -1
 */
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
@@ -16,19 +29,24 @@ struct PolyNode
 };
 
 char Compare(int exp1, int exp2)
+//比较指数的大小, 注意返回值为char
 {
 	if (exp1 == exp2) { return '='; }
 	else if (exp1 > exp2) { return '>';}
 	else { return '<'; }
 }
 void Attach(PolyNode* *back, int coef, int expon)
+//把一项加入到结果链表的后面
+//注意: back是指针的指针, 因为想直接修改原结果多项式
+//但是远多项式本身就是用指针做的, 所以想直接修改就要用二级指针
 {
 	PolyNode *fresh = malloc(sizeof*fresh);
 	fresh->coef = coef;
 	fresh->expon = expon;
-	fresh->next = NULL;
 
-	(*back)->next = fresh;
+	fresh->next = NULL;		//别忘了结尾指向NULL
+
+	(*back)->next = fresh;	//注意连接的是 (*back)
 	(*back) = fresh;
 }
 PolyNode *PolyAdd(const PolyNode *p1, const PolyNode *p2)
@@ -71,13 +89,21 @@ PolyNode *PolyAdd(const PolyNode *p1, const PolyNode *p2)
 		}
 	}
 
-	for (; p1 != NULL; p1 = p1->next) { Attach(&move, p1->coef, p1->expon); }
-	for (; p2 != NULL; p2 = p2->next) { Attach(&move, p2->coef, p2->expon); }
+	//退出while loop意味着有一个多项式被处理完了
+	//接下来做的是把没处理完的那个多项式剩下的一截接上去
 
-	move->next = NULL;
+	move->next = (p1 ? p1 : p2);
+
+	//for (; p1 != NULL; p1 = p1->next) { Attach(&move, p1->coef, p1->expon); }
+	//for (; p2 != NULL; p2 = p2->next) { Attach(&move, p2->coef, p2->expon); }
+	//move->next = NULL;		//全部处理完让结果链表尾部指向NULL
+
+	//把头上多开辟的空间释放掉, 方便结果的输出
+	//这里链表的第一个结点存放的就是实实在在有意义的数据了
 	PolyNode *save = head;
 	head = head->next;
 	free(save);
+
 	return head;
 }
 
@@ -140,6 +166,17 @@ void showPoly(const PolyNode *head)
 	}
 	printf("\n");
 }
+void deletePoly(PolyNode* *head)
+{
+	PolyNode *save;
+	while (*head)
+	{
+		save = (*head);
+		(*head) = (*head)->next;
+		free(save);
+		save = NULL;
+	}
+}
 
 int main(void)
 {
@@ -154,6 +191,11 @@ int main(void)
 
 	PolyNode *sum = PolyAdd(s1, s2);
 	printf("\n结果多项式为: "); showPoly(sum);
+
+	deletePoly(&s1);
+	deletePoly(&s2);
+	deletePoly(&sum);
+
 	system("pause");
 	return 0;
 }
