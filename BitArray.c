@@ -18,7 +18,9 @@ int main(void)
 	int i, j;
 
 	memset(bitarray, 0, BITNSLOTS(MAX));
-
+	
+	//Sieve of Eratosthenes Ëã·¨ÇóËØÊı
+	// https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes
 	for (i = 2; i < MAX; i++) 
 	{
 		if (!BITTEST(bitarray, i)) 
