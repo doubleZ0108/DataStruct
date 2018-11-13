@@ -12,7 +12,7 @@ bool ListRead(list<int> &buf)
 	while (cin >> now)
 	{
 		if (-1 == now) { break; }
-		else if (!buf.empty() && (now < buf.back() || now <= 0) )
+		else if ((!buf.empty() && now < buf.back()) || now <= 0 )
 			//如果输入序列不是递减序列,或者不是正数, flag = false, 并让用户重新输入
 		{
 			flag = false;
