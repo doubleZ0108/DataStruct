@@ -13,7 +13,22 @@
 
 int main(void)
 {
-	
+	//声明长度为MAX的bit数组
+	char bitarray[BITNSLOTS(MAX)];
+	int i, j;
+
+	memset(bitarray, 0, BITNSLOTS(MAX));
+
+	for (i = 2; i < MAX; i++) 
+	{
+		if (!BITTEST(bitarray, i)) 
+		{
+			printf("%d\n", i);
+			for (j = i + i; j < MAX; j += i)
+				//设置位数组中的某一位
+				BITSET(bitarray, j);
+		}
+	}
 
 	system("pause");
 	return 0;
