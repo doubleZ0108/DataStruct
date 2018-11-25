@@ -1,59 +1,54 @@
 #include <iostream>
 #include <cstdlib>
-#include <list>
+#include <queue>
 #include <algorithm>
 
 using namespace std;
 int main(void)
 {
-	list<int> listA, listB;
-	int sum;
+	queue<int> QueueA, QueueB;
+	queue<int> Qresult;
+
+	int sum, buf;
 	cin >> sum;
 
-	int buf;
 	for (int i = 0; i < sum; ++i)
 	{
 		cin >> buf;
-		if (buf % 2)
-		{
-			listA.push_back(buf);
-		}
-		else
-		{
-			listB.push_back(buf);
-		}
+		if (buf % 2) { QueueA.push(buf); }
+		else { QueueB.push(buf); }
 	}
 
-	while (!listA.empty() && !listB.empty())
+	while (!QueueA.empty() && !QueueB.empty())
 	{
-		cout << listA.front() << ' ';
-		listA.pop_front();
+		Qresult.push(QueueA.front());
+		QueueA.pop();
 
-		cout << listA.front() << ' ';
-		listA.pop_front();
+		Qresult.push(QueueA.front());
+		QueueA.pop();
 
-		cout << listB.front() << ' ';
-		listB.pop_front();
+		Qresult.push(QueueB.front());
+		QueueB.pop();
 	}
 
-	if (!listA.empty())
+	while (!QueueA.empty())
 	{
-		while (listA.size() > 1)
-		{
-			cout << listA.front() << ' ';
-			listA.pop_front();
-		}
-		cout << listA.front();
+		Qresult.push(QueueA.front());
+		QueueA.pop();
 	}
-	else if (!listB.empty())
+	while (!QueueB.empty())
 	{
-		while (listB.size() > 1)
-		{
-			cout << listB.front() << ' ';
-			listB.pop_front();
-		}
-		cout << listB.front();
+		Qresult.push(QueueB.front());
+		QueueB.pop();
 	}
+
+	while (Qresult.size() > 1)
+	{
+		cout << Qresult.front() << ' ';
+		Qresult.pop();
+	}
+	cout << Qresult.front();
+
 
 	system("pause");
 	return 0;
