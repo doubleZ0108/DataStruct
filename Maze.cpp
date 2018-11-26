@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <vector>
-#include <list>
+#include <stack>
 using namespace std;
 
 #define ACC 0		//ACC代表这个位置是通路
@@ -11,7 +11,7 @@ struct Point
 {
 	int x, y;
 	Point() = default;
-	Point(int a,int b):x(a),y(b){}
+	Point(int a, int b) :x(a), y(b) {}
 	bool operator==(const Point &rhv);
 };
 struct Offsets
@@ -19,13 +19,13 @@ struct Offsets
 	Point pos;			//方向向量
 	const char *dir;	//方向名字
 };
-Offsets Move[4] = { { Point(-1,0),"N"},{ Point(0,1),"E"},
-					{ Point(1,0),"S"},{ Point(0,-1),"W"}, };
-	//四个方位的向量
+Offsets Move[4] = { { Point(-1,0),"N" },{ Point(0,1),"E" },
+{ Point(1,0),"S" },{ Point(0,-1),"W" }, };
+//四个方位的向量
 
-bool SeekPath(Point now, const Point dest, 
-	vector<vector<int> > &Maze, vector<vector<int> > &mark, list<Point> &AccessLink)
-	//当前位置 终点位置 整张地图 记录哪些点走过了的地图 结果链表用于记录每一步的坐标
+bool SeekPath(Point now, const Point dest,
+	vector<vector<int> > &Maze, vector<vector<int> > &mark, stack<Point> &AccessStack)
+	//当前位置 终点位置 整张地图 记录哪些点走过了的地图 结果栈用于记录每一步的坐标
 {
 	Offsets buf;	//假设往这个方向走的替代变量
 
@@ -45,10 +45,11 @@ bool SeekPath(Point now, const Point dest,
 		{
 			mark[buf.pos.x][buf.pos.y] = 1;		//往这尝试的时候把mark地图修改一下
 
-			if (SeekPath(buf.pos, dest, Maze, mark, AccessLink))
+			if (SeekPath(buf.pos, dest, Maze, mark, AccessStack))
 			{
-				AccessLink.push_front(buf.pos);		//因为是在递归之后的语句所以会逆序进行
-								//因此这里选择了往链表的头上插入,人工把结果再逆一遍就正了
+				AccessStack.push(buf.pos);
+				//因为只有最后一步可以走,才可以把坐标压入栈中
+				//所以使用后进先出的结构储存行进中各点的坐标
 				Maze[buf.pos.x][buf.pos.y] = 5;		//地图上显示走的路径
 				return true;
 			}
@@ -58,11 +59,11 @@ bool SeekPath(Point now, const Point dest,
 	return false;
 }
 
-void FindGap(int row, int col, const vector<vector<int> > &Maze, 
+void FindGap(int row, int col, const vector<vector<int> > &Maze,
 	Point &start, Point &dest)
-//在地图上找出发点和终点的位置坐标
-//做法是在地图的四周找唯一的两个ACC, 然后随机赋值给出发点和终点
-//默认是四周有且仅有两个ACC
+	//在地图上找出发点和终点的位置坐标
+	//做法是在地图的四周找唯一的两个ACC, 然后随机赋值给出发点和终点
+	//默认是四周有且仅有两个ACC
 {
 	int i, j;
 	int cnt = 0;
@@ -91,11 +92,11 @@ void FindGap(int row, int col, const vector<vector<int> > &Maze,
 			++cnt;
 			if (cnt == 1)
 			{
-				start = Point(row-1, j);
+				start = Point(row - 1, j);
 			}
 			else if (cnt == 2)
 			{
-				dest = Point(row-1, j);
+				dest = Point(row - 1, j);
 				return;
 			}
 		}
@@ -125,11 +126,11 @@ void FindGap(int row, int col, const vector<vector<int> > &Maze,
 			++cnt;
 			if (cnt == 1)
 			{
-				start = Point(i, col-1);
+				start = Point(i, col - 1);
 			}
 			else if (cnt == 2)
 			{
-				dest = Point(i, col-1);
+				dest = Point(i, col - 1);
 				return;
 			}
 		}
@@ -138,12 +139,14 @@ void FindGap(int row, int col, const vector<vector<int> > &Maze,
 
 int main(void)
 {
-	int row, col; 
+	int row, col;
 	cout << "请输入迷宫行数和列数: ";
 	cin >> row >> col;
 	vector<vector<int> > Maze(row, vector<int>(col, 0));
 	vector<vector<int> > mark(row, vector<int>(col, 0));
 
+	cout << "请输入迷宫地图: " << endl;
+	//读入row行col列的迷宫
 	for (int i = 0; i < row; ++i)
 	{
 		for (int j = 0; j < col; ++j)
@@ -152,29 +155,30 @@ int main(void)
 			cin >> Maze[i][j];
 		}
 	}
-	
+
 	//寻找出发点和终点坐标
 	Point start, dest;
 	FindGap(row, col, Maze, start, dest);
 
 	mark[start.x][start.y] = 1;		//出发点位置坐标
-	list<Point> AccessLink;
-	if (SeekPath(start, dest, Maze, mark, AccessLink))
+	stack<Point> AccessStack;		//使用工作栈储存行进中各点的坐标
+
+	if (SeekPath(start, dest, Maze, mark, AccessStack))
 	{
-		AccessLink.push_front(start);
+		AccessStack.push(start);		//如果此迷宫有解,则把起始点位置压入栈中
 		Maze[start.x][start.y] = 5;
 	}
 
 
-	if (AccessLink.size() > 1)
+	if (AccessStack.size() > 1)
 	{
-		Point save = AccessLink.back();
-		AccessLink.pop_back();
-		for (list<Point>::iterator liter = AccessLink.begin(); liter != AccessLink.end(); ++liter)
+		Point buf;
+		for (buf = AccessStack.top(); AccessStack.size() != 1; buf = AccessStack.top())
 		{
-			printf("(%d, %d)->", (*liter).x, (*liter).y);
+			AccessStack.pop();
+			printf("(%d, %d)->", buf.x, buf.y);
 		}
-		printf("(%d, %d)", save.x, save.y);
+		printf("(%d, %d)\n", buf.x, buf.y);		//最后一个结点不输出箭头
 	}
 	else
 	{
@@ -183,7 +187,7 @@ int main(void)
 
 
 
-	cout << endl<< "**********************" << endl;
+	cout << endl << "**********************" << endl;
 	printf("   ");
 	for (int i = 0; i < col; ++i)
 	{
@@ -200,22 +204,6 @@ int main(void)
 		cout << endl;
 	}
 
-	cout << endl << "**********************" << endl;
-	printf("   ");
-	for (int i = 0; i < col; ++i)
-	{
-		printf("%-3d", i);
-	}
-	cout << endl;
-	for (int i = 0; i < row; ++i)
-	{
-		printf("%-3d", i);
-		for (int j = 0; j < col; ++j)
-		{
-			printf("%-3d", mark[i][j]);
-		}
-		cout << endl;
-	}
 
 	system("pause");
 	return 0;
