@@ -160,6 +160,13 @@ int main(void)
 	Point start, dest;
 	FindGap(row, col, Maze, start, dest);
 
+	/*调试用: 显示出发点坐标和终点坐标*/
+	/*printf("\n///////////////////////////////////////////////\n");
+	printf("the start pos is (%d, %d)\n", start.x, start.y);
+	printf("the dest pos is (%d, %d)\n", dest.x, dest.y);
+	printf("///////////////////////////////////////////////\n\n");*/
+
+
 	mark[start.x][start.y] = 1;		//出发点位置坐标
 	stack<Point> AccessStack;		//使用工作栈储存行进中各点的坐标
 
@@ -170,7 +177,8 @@ int main(void)
 	}
 
 
-	if (AccessStack.size() > 1)
+	cout << endl;
+	if (!AccessStack.empty())
 	{
 		Point buf;
 		for (buf = AccessStack.top(); AccessStack.size() != 1; buf = AccessStack.top())
