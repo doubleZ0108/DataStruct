@@ -27,25 +27,25 @@ class Maze
 {
 private:
 	int row, col;
-	vector<vector<int> > Map;
-	vector<vector<int> > mark;
+	vector<vector<int> > Map;		//地图
+	vector<vector<int> > mark;		//标记地图, 用于判定某个位置是否已经走过
 
-	Point start, dest;
+	Point start, dest;				//起点和终点
 
 	stack<Point> AccessStack;		//使用工作栈储存行进中各点的坐标
 public:
 	Maze() = default;
 	Maze(int _row, int _col);
 
-	void InitMap();			//输入迷宫地图
-	void FindGap();			//寻找起点和终点
-	void showGap();			//显示起点和终点
+	void InitMap();					//输入迷宫地图
+	void FindGap();					//寻找起点和终点
+	void showGap();					//显示起点和终点
 
-	void SeekPath();
-	bool SeekPath(Point now);
+	void SeekPath();				//无参的寻路函数
+	bool SeekPath(Point now);		//递归调用的寻路函数
 
-	void showRoute();
-	void showMap();
+	void showRoute();				//显示寻路的结果
+	void showMap();					//输出地图
 };
 
 int main(void)
@@ -54,21 +54,27 @@ int main(void)
 	cout << "请输入迷宫行数和列数: ";
 	cin >> row >> col;
 	
+	/*创建 row*col 尺寸的地图*/
 	Maze maze(row, col);
 
+	/*读入地图*/
 	cout << "请输入迷宫地图: " << endl;
 	maze.InitMap();
 
-	//寻找出发点和终点坐标
+	/*寻找出发点和终点坐标*/
 	maze.FindGap();
 
 	/*调试用: 显示出发点坐标和终点坐标*/
-	maze.showGap();
+	//maze.showGap();
 
+	/*寻路算法*/
 	maze.SeekPath();
 
+	/*输出找到的路径或者无解信息*/
 	maze.showRoute();
-	maze.showMap();
+
+	/*调试用: 输出寻路后的地图*/
+	//maze.showMap();
 
 
 	system("pause");
@@ -192,7 +198,7 @@ void Maze::showGap()
 
 void Maze::SeekPath()
 {
-	mark[start.x][start.y] = 1;		//出发点位置坐标
+	mark[start.x][start.y] = 1;			//出发点位置坐标
 
 	if (SeekPath(start))
 	{
