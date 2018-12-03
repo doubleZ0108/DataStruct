@@ -23,54 +23,99 @@ Offsets Move[4] = { { Point(-1,0),"N" },{ Point(0,1),"E" },
 { Point(1,0),"S" },{ Point(0,-1),"W" }, };
 //四个方位的向量
 
-bool SeekPath(Point now, const Point dest,
-	vector<vector<int> > &Maze, vector<vector<int> > &mark, stack<Point> &AccessStack)
-	//当前位置 终点位置 整张地图 记录哪些点走过了的地图 结果栈用于记录每一步的坐标
+class Maze
 {
-	Offsets buf;	//假设往这个方向走的替代变量
+private:
+	int row, col;
+	vector<vector<int> > Map;
+	vector<vector<int> > mark;
 
-	if (now == dest) { return true; }	//如果找到终点了就退出递归并返回true
+	Point start, dest;
 
-	for (int i = 0; i < 4; ++i)
-		//4个方向都尝试一遍能不能走
-	{
-		buf.pos.x = now.x + Move[i].pos.x;
-		buf.pos.y = now.y + Move[i].pos.y;
-		buf.dir = Move[i].dir;
+	stack<Point> AccessStack;		//使用工作栈储存行进中各点的坐标
+public:
+	Maze() = default;
+	Maze(int _row, int _col);
 
-		if (buf.pos.x < 0 || buf.pos.y < 0) { continue; }	//如果试探的走出了地图则直接换方向
+	void InitMap();			//输入迷宫地图
+	void FindGap();			//寻找起点和终点
+	void showGap();			//显示起点和终点
 
-		if (Maze[buf.pos.x][buf.pos.y] == ACC && mark[buf.pos.x][buf.pos.y] == 0)
-			//如果地图上这个点可以走 && 以前没往这尝试过
-		{
-			mark[buf.pos.x][buf.pos.y] = 1;		//往这尝试的时候把mark地图修改一下
+	void SeekPath();
+	bool SeekPath(Point now);
 
-			if (SeekPath(buf.pos, dest, Maze, mark, AccessStack))
-			{
-				AccessStack.push(buf.pos);
-				//因为只有最后一步可以走,才可以把坐标压入栈中
-				//所以使用后进先出的结构储存行进中各点的坐标
-				Maze[buf.pos.x][buf.pos.y] = 5;		//地图上显示走的路径
-				return true;
-			}
-		}
-	}
+	void showRoute();
+	void showMap();
+};
 
-	return false;
+int main(void)
+{
+	int row, col;
+	cout << "请输入迷宫行数和列数: ";
+	cin >> row >> col;
+	
+	Maze maze(row, col);
+
+	cout << "请输入迷宫地图: " << endl;
+	maze.InitMap();
+
+	//寻找出发点和终点坐标
+	maze.FindGap();
+
+	/*调试用: 显示出发点坐标和终点坐标*/
+	maze.showGap();
+
+	maze.SeekPath();
+
+	maze.showRoute();
+	maze.showMap();
+
+
+	system("pause");
+	return 0;
 }
 
-void FindGap(int row, int col, const vector<vector<int> > &Maze,
-	Point &start, Point &dest)
-	//在地图上找出发点和终点的位置坐标
-	//做法是在地图的四周找唯一的两个ACC, 然后随机赋值给出发点和终点
-	//默认是四周有且仅有两个ACC
+bool Point::operator==(const Point &rhv)
+{
+	if (this->x == rhv.x && this->y == rhv.y)
+	{
+		return true;
+	}
+	else { return false; }
+}
+
+
+Maze::Maze(int _row, int _col)
+	:row(_row),col(_col)
+{
+	Map.resize(row, vector<int>(col, 0));
+	mark.resize(row, vector<int>(col, 0));
+}
+
+void Maze::InitMap()
+{
+	//读入row行col列的迷宫
+	for (int i = 0; i < row; ++i)
+	{
+		for (int j = 0; j < col; ++j)
+		{
+			mark[i][j] = 0;
+			cin >> Map[i][j];
+		}
+	}
+}
+
+void Maze::FindGap()
+//在地图上找出发点和终点的位置坐标
+//做法是在地图的四周找唯一的两个ACC, 然后随机赋值给出发点和终点
+//默认是四周有且仅有两个ACC
 {
 	int i, j;
 	int cnt = 0;
 	//上
 	for (int j = 0; j < col; ++j)
 	{
-		if (Maze[0][j] == ACC)
+		if (Map[0][j] == ACC)
 		{
 			++cnt;
 			if (cnt == 1)
@@ -87,7 +132,7 @@ void FindGap(int row, int col, const vector<vector<int> > &Maze,
 	//下
 	for (j = 0; j < col; ++j)
 	{
-		if (Maze[row - 1][j] == ACC)
+		if (Map[row - 1][j] == ACC)
 		{
 			++cnt;
 			if (cnt == 1)
@@ -104,7 +149,7 @@ void FindGap(int row, int col, const vector<vector<int> > &Maze,
 	//左
 	for (i = 1; i < row - 1; ++i)
 	{
-		if (Maze[i][0] == ACC)
+		if (Map[i][0] == ACC)
 		{
 			++cnt;
 			if (cnt == 1)
@@ -121,7 +166,7 @@ void FindGap(int row, int col, const vector<vector<int> > &Maze,
 	//右
 	for (i = 1; i < row - 1; ++i)
 	{
-		if (Maze[i][col - 1] == ACC)
+		if (Map[i][col - 1] == ACC)
 		{
 			++cnt;
 			if (cnt == 1)
@@ -137,46 +182,62 @@ void FindGap(int row, int col, const vector<vector<int> > &Maze,
 	}
 }
 
-int main(void)
+void Maze::showGap()
 {
-	int row, col;
-	cout << "请输入迷宫行数和列数: ";
-	cin >> row >> col;
-	vector<vector<int> > Maze(row, vector<int>(col, 0));
-	vector<vector<int> > mark(row, vector<int>(col, 0));
+	printf("\n///////////////////////////////////////////////\n");
+	printf("the start pos is (%d, %d)\n", start.x, start.y);
+	printf("the dest pos is (%d, %d)\n", dest.x, dest.y);
+	printf("///////////////////////////////////////////////\n\n");
+}
 
-	cout << "请输入迷宫地图: " << endl;
-	//读入row行col列的迷宫
-	for (int i = 0; i < row; ++i)
+void Maze::SeekPath()
+{
+	mark[start.x][start.y] = 1;		//出发点位置坐标
+
+	if (SeekPath(start))
 	{
-		for (int j = 0; j < col; ++j)
+		AccessStack.push(start);		//如果此迷宫有解,则把起始点位置压入栈中
+		Map[start.x][start.y] = 5;
+	}
+}
+
+bool Maze::SeekPath(Point now)
+//当前位置 终点位置 整张地图 记录哪些点走过了的地图 结果栈用于记录每一步的坐标
+{
+	Offsets buf;	//假设往这个方向走的替代变量
+
+	if (now == dest) { return true; }	//如果找到终点了就退出递归并返回true
+
+	for (int i = 0; i < 4; ++i)
+		//4个方向都尝试一遍能不能走
+	{
+		buf.pos.x = now.x + Move[i].pos.x;
+		buf.pos.y = now.y + Move[i].pos.y;
+		buf.dir = Move[i].dir;
+
+		if (buf.pos.x < 0 || buf.pos.y < 0) { continue; }	//如果试探的走出了地图则直接换方向
+
+		if (Map[buf.pos.x][buf.pos.y] == ACC && mark[buf.pos.x][buf.pos.y] == 0)
+			//如果地图上这个点可以走 && 以前没往这尝试过
 		{
-			mark[i][j] = 0;
-			cin >> Maze[i][j];
+			mark[buf.pos.x][buf.pos.y] = 1;		//往这尝试的时候把mark地图修改一下
+
+			if (SeekPath(buf.pos))
+			{
+				AccessStack.push(buf.pos);
+				//因为只有最后一步可以走,才可以把坐标压入栈中
+				//所以使用后进先出的结构储存行进中各点的坐标
+				Map[buf.pos.x][buf.pos.y] = 5;		//地图上显示走的路径
+				return true;
+			}
 		}
 	}
 
-	//寻找出发点和终点坐标
-	Point start, dest;
-	FindGap(row, col, Maze, start, dest);
+	return false;
+}
 
-	/*调试用: 显示出发点坐标和终点坐标*/
-	/*printf("\n///////////////////////////////////////////////\n");
-	printf("the start pos is (%d, %d)\n", start.x, start.y);
-	printf("the dest pos is (%d, %d)\n", dest.x, dest.y);
-	printf("///////////////////////////////////////////////\n\n");*/
-
-
-	mark[start.x][start.y] = 1;		//出发点位置坐标
-	stack<Point> AccessStack;		//使用工作栈储存行进中各点的坐标
-
-	if (SeekPath(start, dest, Maze, mark, AccessStack))
-	{
-		AccessStack.push(start);		//如果此迷宫有解,则把起始点位置压入栈中
-		Maze[start.x][start.y] = 5;
-	}
-
-
+void Maze::showRoute()
+{
 	cout << endl;
 	if (!AccessStack.empty())
 	{
@@ -192,9 +253,10 @@ int main(void)
 	{
 		cout << "此迷宫无解!\n";
 	}
+}
 
-
-
+void Maze::showMap()
+{
 	cout << endl << "**********************" << endl;
 	printf("   ");
 	for (int i = 0; i < col; ++i)
@@ -207,22 +269,8 @@ int main(void)
 		printf("%-3d", i);
 		for (int j = 0; j < col; ++j)
 		{
-			printf("%-3d", Maze[i][j]);
+			printf("%-3d", Map[i][j]);
 		}
 		cout << endl;
 	}
-
-
-	system("pause");
-	return 0;
 }
-
-bool Point::operator==(const Point &rhv)
-{
-	if (this->x == rhv.x && this->y == rhv.y)
-	{
-		return true;
-	}
-	else { return false; }
-}
-
