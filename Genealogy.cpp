@@ -8,6 +8,7 @@ using namespace std;
 
 struct People
 {
+	People() = default;
 	People(const string &buf);
 
 	string name;
@@ -16,6 +17,7 @@ struct TreeNode
 {
 	friend ostream& operator<<(ostream &os, const TreeNode &buf);
 
+	TreeNode() = default;
 	TreeNode(const People &buf);
 
 	struct People data;
@@ -30,12 +32,15 @@ public:
 	Genealogy(const string &buf);
 	~Genealogy();
 
-	void showRoot();
-	void DestroyGenealogy(TreeNode *root);
-	TreeNode *findPeople(TreeNode *root, const string &name);
+	void showRoot();							//输出根节点
+	void DestroyGenealogy(TreeNode *root);		//销毁树中所有结点
+	TreeNode *findPeople(TreeNode *root, const string &name);	//寻找某个人是否在家谱中
 
-	void BuildFamily();
+	void BuildFamily();			//建立家庭
+	void showFirstGenChild(const TreeNode *root);	//输出第一代子孙
+	
 };
+
 int main(void)
 {
 	cout << "**             " << "家谱管理系统" << "                 **" << endl;
@@ -68,7 +73,7 @@ int main(void)
 		{
 		case 'A':
 		{
-
+			GenTree.BuildFamily();
 			break;
 		}
 		case 'B': 
@@ -116,11 +121,8 @@ TreeNode::TreeNode(const People & buf)
 
 Genealogy::Genealogy(const string & buf)
 {
-	_root = new TreeNode;
+	_root = new TreeNode(People(buf));
 	assert(_root != NULL);
-
-	_root->data.name = buf;
-	_root->Child.clear();
 }
 
 Genealogy::~Genealogy()
@@ -154,13 +156,14 @@ void Genealogy::DestroyGenealogy(TreeNode *root)
 
 TreeNode * Genealogy::findPeople(TreeNode *root, const string &name)
 {
-	if (root == NULL) { return NULL; }
-
 	if (root->data.name == name) { return root; }
+	else if (root->Child.empty()) { return NULL; }
 	else
 	{
-		findPeople(root->leftChild, name);
-		findPeople(root->rightChild, name);
+		for (auto &buf : root->Child)
+		{
+			findPeople(&buf, name);
+		}
 	}
 }
 
@@ -171,7 +174,7 @@ void Genealogy::BuildFamily()
 	cin >> name;
 
 	TreeNode *move = findPeople(_root, name);
-	if (!move)
+	if (move)
 	{
 		int size;
 		cout << "请输入" << move->data.name << "的儿女人数: ";
@@ -183,6 +186,8 @@ void Genealogy::BuildFamily()
 			cin >> name;
 			move->Child.push_back(TreeNode(People(name)));
 		}
+
+		showFirstGenChild(move);
 	}
 	else
 	{
@@ -190,5 +195,12 @@ void Genealogy::BuildFamily()
 	}
 }
 
-
-
+void Genealogy::showFirstGenChild(const TreeNode *root)
+{
+	cout << root->data.name << "的第一代子孙是: ";
+	for (const auto& buf : root->Child)
+	{
+		cout << buf << "	";
+	}
+	cout << endl;
+}
