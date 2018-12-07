@@ -2,12 +2,15 @@
 #include <cstdlib>
 #include <string>
 #include <list>
+#include <queue>
 #include <cassert>
 #include <algorithm>
 using namespace std;
 
 struct People
 {
+	bool operator ==(const People &buf);
+
 	People() = default;
 	People(const string &buf);
 
@@ -16,6 +19,7 @@ struct People
 struct TreeNode
 {
 	friend ostream& operator<<(ostream &os, const TreeNode &buf);
+	bool operator !=(const TreeNode &buf);
 
 	TreeNode() = default;
 	TreeNode(const People &buf);
@@ -26,12 +30,13 @@ struct TreeNode
 class Genealogy
 {
 private:
-	TreeNode * _root;
+	TreeNode * _root = NULL;
 public:
 	Genealogy() = default;
 	Genealogy(const string &buf);
 	~Genealogy();
 
+	bool isEmpty() { return _root == NULL; }
 	void showRoot();							//输出根节点
 	void DestroyGenealogy(TreeNode *root);		//销毁树中所有结点
 	TreeNode *findPeople(TreeNode *root, const string &name);	//寻找某个人是否在家谱中
@@ -39,6 +44,7 @@ public:
 	void BuildFamily();			//建立家庭
 	void showFirstGenChild(const TreeNode *root);	//输出第一代子孙
 	
+	void showTree();
 };
 
 int main(void)
@@ -51,6 +57,7 @@ int main(void)
 	cout << "**             " << "C --- 解散局部家庭" << "           **" << endl;
 	cout << "**             " << "D --- 更改家庭成员姓名" << "       **" << endl;
 	cout << "**             " << "E --- 退出程序" << "               **" << endl;
+	cout << "**             " << "S --- 输出家谱" << "               **" << endl;
 
 	/*建立家谱*/
 	cout << "首先建立一个家谱!" << endl;
@@ -91,6 +98,11 @@ int main(void)
 
 			break;
 		}
+		case 'S':
+		{
+			GenTree.showTree();
+			break;
+		}
 		default:
 		{
 			cout << "请输入大写字母A~E!" << endl;
@@ -110,8 +122,18 @@ ostream & operator<<(ostream & os, const TreeNode & buf)
 	return os;
 }
 
+bool People::operator==(const People & buf)
+{
+	return (this->name == buf.name);
+}
+
 People::People(const string & buf)
 	:name(buf) {}
+
+bool TreeNode::operator!=(const TreeNode & buf)
+{
+	return !(this->data == buf.data);
+}
 
 TreeNode::TreeNode(const People & buf)
 	: data(buf)
@@ -162,9 +184,12 @@ TreeNode * Genealogy::findPeople(TreeNode *root, const string &name)
 	{
 		for (auto &buf : root->Child)
 		{
-			findPeople(&buf, name);
+			TreeNode* flag = findPeople(&buf,name);
+			if (flag) { return flag; }
 		}
 	}
+
+	return NULL;
 }
 
 void Genealogy::BuildFamily()
@@ -204,3 +229,46 @@ void Genealogy::showFirstGenChild(const TreeNode *root)
 	}
 	cout << endl;
 }
+
+void Genealogy::showTree()
+{
+	if (isEmpty())
+	{
+		cout << "家谱为空!" << endl;
+		return;
+	}
+
+	queue<TreeNode> Q;
+	Q.push(*this->_root);
+
+	TreeNode buf(People("buf"));
+
+	TreeNode move;
+
+	while (!Q.empty())
+	{
+		Q.push(buf);
+
+		move = Q.front();
+
+		while (move!=buf)
+		{
+			Q.pop();
+			for (const auto& elem : move.Child)
+			{
+				Q.push(elem);
+			}
+
+			if (move != buf)
+			{
+				cout << move << "  ";
+			}
+			move = Q.front();
+
+		}
+		Q.pop();
+		cout << endl;
+	}
+}
+
+
