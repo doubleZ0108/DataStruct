@@ -105,7 +105,7 @@ int main(void)
 		}
 		case 'D':
 		{
-
+			GenTree.changeName();
 			break;
 		}
 		case 'S':
@@ -371,6 +371,26 @@ void Genealogy::removeFamily()
 		//再释放该结点
 		delete move;
 		move = NULL;
+	}
+	else
+	{
+		cout << "家谱中没有该家庭成员!" << endl;
+	}
+}
+
+void Genealogy::changeName()
+{
+	string name;
+	cout << "请输入要更改姓名的人的目前姓名: ";
+	cin >> name;
+
+	TreeNode *move = findPeople(_root, name);
+	if (move)
+		//如果存在该 待更改姓名的结点
+	{
+		cout << "请输入更改后的姓名: ";
+		cin >> *move;
+		cout << name << "已更名为" << *move << endl;
 	}
 	else
 	{
