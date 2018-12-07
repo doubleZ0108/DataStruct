@@ -49,9 +49,12 @@ public:
 	void showTree();								//分层输出树中所有结点
 
 	TreeNode *findPeople(TreeNode *root, const string &name);	//寻找某个人是否在家谱中
+	TreeNode *findParent(TreeNode *root, const TreeNode *buf);	//寻找某个人的父节点
 
 	void BuildFamily();			//建立家庭
-	void addChild();
+	void addChild();			//添加家庭成员
+	void removeFamily();		//解散家庭
+	void changeName();			//更改家庭成员姓名
 };
 
 int main(void)
@@ -97,7 +100,7 @@ int main(void)
 		}
 		case 'C': 
 		{
-
+			GenTree.removeFamily();
 			break;
 		}
 		case 'D':
@@ -246,7 +249,6 @@ void Genealogy::showTree()
 				cout << move << "  ";
 			}
 			move = *(Q.front());
-
 		}
 
 		Q.pop();				//将当前层次的分隔结点取出
@@ -268,6 +270,24 @@ TreeNode * Genealogy::findPeople(TreeNode *root, const string &name)
 			TreeNode* flag = findPeople(buf,name);
 			if (flag) { return flag; }
 		}
+	}
+
+	return NULL;
+}
+
+TreeNode * Genealogy::findParent(TreeNode * root, const TreeNode *buf)
+{
+	if (root->Child.empty())	//如果该结点为叶节点, 则一定不是任何结点的parent
+	{ return NULL; }
+
+	if(find(root->Child.begin(),root->Child.end(),buf) != root->Child.end())
+		//如果孩子数组中有该结点则返回parent指针
+	{ return root;}
+
+	for (auto& elem : root->Child)
+	{
+		TreeNode *flag = findParent(elem, buf);		//递归调用findparent函数继续寻找
+		if (flag) { return flag; }
 	}
 
 	return NULL;
@@ -322,6 +342,35 @@ void Genealogy::addChild()
 		parent->Child.push_back(fresh);		//添加到当前节点的孩子数组后面
 
 		this->showFirstGenChild(parent);	//输出添加儿子后 该结点的第一代子孙
+	}
+	else
+	{
+		cout << "家谱中没有该家庭成员!" << endl;
+	}
+}
+
+void Genealogy::removeFamily()
+{
+	string name;
+	cout << "请输入要解散家庭的人的姓名: ";
+	cin >> name;
+
+	TreeNode *move = findPeople(_root, name);
+	if (move)
+		//如果存在该 待解散家庭的结点
+	{
+		cout << "要解散家庭的人是: " << *move << endl;
+		this->showFirstGenChild(move);		//输出下一代子孙
+
+		this->DestroyGenealogy(move);		//递归destroy函数, 递归的删除该结点作为根节点的子树
+
+		//先在parent的孩子数组中把他一出
+		TreeNode *parent = findParent(_root, move);
+		parent->Child.erase(find(parent->Child.begin(), parent->Child.end(), move));
+
+		//再释放该结点
+		delete move;
+		move = NULL;
 	}
 	else
 	{
