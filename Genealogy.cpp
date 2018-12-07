@@ -356,7 +356,18 @@ void Genealogy::removeFamily()
 	cin >> name;
 
 	TreeNode *move = findPeople(_root, name);
-	if (move)
+	if (move == _root)
+		//如果解散的根节点特殊处理
+	{
+		cout << "要解散家庭的人是: " << *move << endl;
+		this->showFirstGenChild(move);		//输出下一代子孙
+
+		DestroyGenealogy(_root);
+
+		delete _root;
+		_root = NULL;
+	}
+	else if (move)
 		//如果存在该 待解散家庭的结点
 	{
 		cout << "要解散家庭的人是: " << *move << endl;
