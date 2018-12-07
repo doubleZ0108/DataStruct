@@ -7,44 +7,49 @@
 #include <algorithm>
 using namespace std;
 
+/*成员信息类*/
 struct People
 {
-	bool operator ==(const People &buf);
+	bool operator ==(const People &buf);	//判断两个成员是否是同一个人
 
 	People() = default;
 	People(const string &buf);
 
-	string name;
+	string name;		//姓名
 };
+/*树中的节点类*/
 struct TreeNode
 {
-	friend ostream& operator<<(ostream &os, const TreeNode &buf);
-	bool operator !=(const TreeNode &buf);
+	friend ostream& operator<<(ostream &os, const TreeNode &buf);	//重载运算符用于输出树中的结点
+	bool operator !=(const TreeNode &buf);		//判断两个树中的结点是否不相等
 
 	TreeNode() = default;
 	TreeNode(const People &buf);
 
-	struct People data;
-	list<TreeNode> Child;
+	struct People data;		//成员信息
+	list<TreeNode> Child;	//孩子链表
 };
+/*家谱类*/
 class Genealogy
 {
 private:
-	TreeNode * _root = NULL;
+	TreeNode * _root = NULL;		//家谱的根节点
 public:
 	Genealogy() = default;
 	Genealogy(const string &buf);
 	~Genealogy();
 
-	bool isEmpty() { return _root == NULL; }
-	void showRoot();							//输出根节点
+	bool isEmpty() { return _root == NULL; }	//判断家谱是否为空
 	void DestroyGenealogy(TreeNode *root);		//销毁树中所有结点
+
+	void showRoot();								//输出根节点
+	void showFirstGenChild(const TreeNode *root);	//输出第一代子孙
+	void showTree();								//分层输出树中所有结点
+
 	TreeNode *findPeople(TreeNode *root, const string &name);	//寻找某个人是否在家谱中
 
 	void BuildFamily();			//建立家庭
-	void showFirstGenChild(const TreeNode *root);	//输出第一代子孙
 	
-	void showTree();
 };
 
 int main(void)
@@ -116,12 +121,7 @@ int main(void)
 	return 0;
 }
 
-ostream & operator<<(ostream & os, const TreeNode & buf)
-{
-	os << buf.data.name;
-	return os;
-}
-
+//////////////////////////////////////////////////////////////////
 bool People::operator==(const People & buf)
 {
 	return (this->name == buf.name);
@@ -129,6 +129,15 @@ bool People::operator==(const People & buf)
 
 People::People(const string & buf)
 	:name(buf) {}
+//////////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////////////
+ostream & operator<<(ostream & os, const TreeNode & buf)
+{
+	os << buf.data.name;
+	return os;
+}
 
 bool TreeNode::operator!=(const TreeNode & buf)
 {
@@ -140,7 +149,10 @@ TreeNode::TreeNode(const People & buf)
 {
 	this->Child.clear();
 }
+//////////////////////////////////////////////////////////////////
 
+
+//////////////////////////////////////////////////////////////////
 Genealogy::Genealogy(const string & buf)
 {
 	_root = new TreeNode(People(buf));
@@ -153,11 +165,6 @@ Genealogy::~Genealogy()
 
 	delete _root;
 	_root = NULL;
-}
-
-void Genealogy::showRoot()
-{
-	cout << "此家谱的祖先是: " << *_root << endl;
 }
 
 void Genealogy::DestroyGenealogy(TreeNode *root)
@@ -173,6 +180,62 @@ void Genealogy::DestroyGenealogy(TreeNode *root)
 		{
 			DestroyGenealogy(&bufNode);
 		}
+	}
+}
+
+void Genealogy::showRoot()
+{
+	cout << "此家谱的祖先是: " << *_root << endl;
+}
+
+void Genealogy::showFirstGenChild(const TreeNode *root)
+{
+	cout << root->data.name << "的第一代子孙是: ";
+	for (const auto& buf : root->Child)
+	{
+		cout << buf << "	";
+	}
+	cout << endl;
+}
+
+void Genealogy::showTree()
+{
+	if (isEmpty())
+	{
+		cout << "家谱为空!" << endl;
+		return;
+	}
+
+	queue<TreeNode> Q;
+	Q.push(*this->_root);
+
+	TreeNode buf(People("buf"));
+
+	TreeNode move;
+
+	while (!Q.empty())
+	{
+		Q.push(buf);
+
+		move = Q.front();
+
+		while (move != buf)
+		{
+			Q.pop();
+			for (const auto& elem : move.Child)
+			{
+				Q.push(elem);
+			}
+
+			if (move != buf)
+			{
+				cout << move << "  ";
+			}
+			move = Q.front();
+
+		}
+		Q.pop();
+		cout << endl;
 	}
 }
 
@@ -209,7 +272,9 @@ void Genealogy::BuildFamily()
 		for (int i = 0; i < size; ++i)
 		{
 			cin >> name;
-			move->Child.push_back(TreeNode(People(name)));
+			TreeNode *buf = new TreeNode(People(name));
+			//move->Child.push_back(TreeNode(People(name)));
+			move->Child.push_back(*buf);
 		}
 
 		showFirstGenChild(move);
@@ -220,55 +285,4 @@ void Genealogy::BuildFamily()
 	}
 }
 
-void Genealogy::showFirstGenChild(const TreeNode *root)
-{
-	cout << root->data.name << "的第一代子孙是: ";
-	for (const auto& buf : root->Child)
-	{
-		cout << buf << "	";
-	}
-	cout << endl;
-}
-
-void Genealogy::showTree()
-{
-	if (isEmpty())
-	{
-		cout << "家谱为空!" << endl;
-		return;
-	}
-
-	queue<TreeNode> Q;
-	Q.push(*this->_root);
-
-	TreeNode buf(People("buf"));
-
-	TreeNode move;
-
-	while (!Q.empty())
-	{
-		Q.push(buf);
-
-		move = Q.front();
-
-		while (move!=buf)
-		{
-			Q.pop();
-			for (const auto& elem : move.Child)
-			{
-				Q.push(elem);
-			}
-
-			if (move != buf)
-			{
-				cout << move << "  ";
-			}
-			move = Q.front();
-
-		}
-		Q.pop();
-		cout << endl;
-	}
-}
-
-
+//////////////////////////////////////////////////////////////////
