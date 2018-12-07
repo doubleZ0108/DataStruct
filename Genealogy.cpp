@@ -20,6 +20,7 @@ struct People
 /*树中的节点类*/
 struct TreeNode
 {
+	friend istream& operator>>(istream &is, TreeNode &buf);			//重载运算符用于读入树中的结点
 	friend ostream& operator<<(ostream &os, const TreeNode &buf);	//重载运算符用于输出树中的结点
 	bool operator !=(const TreeNode &buf);		//判断两个树中的结点是否不相等
 
@@ -49,7 +50,7 @@ public:
 	TreeNode *findPeople(TreeNode *root, const string &name);	//寻找某个人是否在家谱中
 
 	void BuildFamily();			//建立家庭
-	
+	void addChild();
 };
 
 int main(void)
@@ -90,7 +91,7 @@ int main(void)
 		}
 		case 'B': 
 		{
-
+			GenTree.addChild();
 			break;
 		}
 		case 'C': 
@@ -132,7 +133,14 @@ People::People(const string & buf)
 //////////////////////////////////////////////////////////////////
 
 
+
 //////////////////////////////////////////////////////////////////
+istream & operator>>(istream & is, TreeNode & buf)
+{
+	is >> buf.data.name;
+	return is;
+}
+
 ostream & operator<<(ostream & os, const TreeNode & buf)
 {
 	os << buf.data.name;
@@ -265,19 +273,43 @@ void Genealogy::BuildFamily()
 	if (move)
 	{
 		int size;
-		cout << "请输入" << move->data.name << "的儿女人数: ";
+		cout << "请输入" << *move << "的儿女人数: ";
 		cin >> size;
 
-		cout << "请依次输入" << move->data.name << "的儿女的姓名: ";
+		cout << "请依次输入" << *move << "的儿女的姓名: ";
 		for (int i = 0; i < size; ++i)
 		{
 			cin >> name;
-			TreeNode *buf = new TreeNode(People(name));
-			//move->Child.push_back(TreeNode(People(name)));
-			move->Child.push_back(buf);
+			move->Child.push_back(new TreeNode(People(name)));
+			assert(move->Child.back() != NULL);
 		}
 
 		showFirstGenChild(move);
+	}
+	else
+	{
+		cout << "家谱中没有该家庭成员!" << endl;
+	}
+}
+
+void Genealogy::addChild()
+{
+	string name;
+	cout << "请输入要添加儿子(或女儿)的人的姓名: ";
+	cin >> name;
+
+	TreeNode *parent = findPeople(_root, name);
+	if (parent)
+	{
+		TreeNode *fresh = new TreeNode;
+		assert(fresh != NULL);
+
+		cout << "请输入" << *parent << "新添加的儿子(或女儿)的姓名: ";
+		cin >> *fresh;
+
+		parent->Child.push_back(fresh);
+
+		this->showFirstGenChild(parent);
 	}
 	else
 	{
