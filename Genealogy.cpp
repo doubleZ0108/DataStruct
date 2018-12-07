@@ -27,7 +27,7 @@ struct TreeNode
 	TreeNode(const People &buf);
 
 	struct People data;		//成员信息
-	list<TreeNode> Child;	//孩子链表
+	list<TreeNode *> Child;	//孩子链表
 };
 /*家谱类*/
 class Genealogy
@@ -178,7 +178,7 @@ void Genealogy::DestroyGenealogy(TreeNode *root)
 	{
 		for (auto &bufNode : root->Child)
 		{
-			DestroyGenealogy(&bufNode);
+			DestroyGenealogy(bufNode);
 		}
 	}
 }
@@ -193,7 +193,7 @@ void Genealogy::showFirstGenChild(const TreeNode *root)
 	cout << root->data.name << "的第一代子孙是: ";
 	for (const auto& buf : root->Child)
 	{
-		cout << buf << "	";
+		cout << *buf << "	";
 	}
 	cout << endl;
 }
@@ -206,8 +206,8 @@ void Genealogy::showTree()
 		return;
 	}
 
-	queue<TreeNode> Q;
-	Q.push(*this->_root);
+	queue<TreeNode *> Q;
+	Q.push(this->_root);
 
 	TreeNode buf(People("buf"));
 
@@ -215,9 +215,9 @@ void Genealogy::showTree()
 
 	while (!Q.empty())
 	{
-		Q.push(buf);
+		Q.push(&buf);
 
-		move = Q.front();
+		move = *(Q.front());
 
 		while (move != buf)
 		{
@@ -231,7 +231,7 @@ void Genealogy::showTree()
 			{
 				cout << move << "  ";
 			}
-			move = Q.front();
+			move = *(Q.front());
 
 		}
 		Q.pop();
@@ -247,7 +247,7 @@ TreeNode * Genealogy::findPeople(TreeNode *root, const string &name)
 	{
 		for (auto &buf : root->Child)
 		{
-			TreeNode* flag = findPeople(&buf,name);
+			TreeNode* flag = findPeople(buf,name);
 			if (flag) { return flag; }
 		}
 	}
@@ -274,7 +274,7 @@ void Genealogy::BuildFamily()
 			cin >> name;
 			TreeNode *buf = new TreeNode(People(name));
 			//move->Child.push_back(TreeNode(People(name)));
-			move->Child.push_back(*buf);
+			move->Child.push_back(buf);
 		}
 
 		showFirstGenChild(move);
