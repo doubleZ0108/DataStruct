@@ -15,7 +15,7 @@ public:
 	Bank() = default;
 	Bank(int sum);
 
-	void Init(int sum);			//输入顾客序列	
+	void Init(int sum);		//输入顾客序列	
 	void dealBusiness();	//处理业务
 	void showOrder();		//输出顾客的处理顺序
 };
