@@ -18,7 +18,7 @@ struct People
 
 	string name;		//姓名
 };
-/*树中的节点类*/
+/*树中的结点类*/
 struct TreeNode
 {
 	friend istream& operator>>(istream &is, TreeNode &buf);			//重载运算符用于读入树中的结点
@@ -35,7 +35,7 @@ struct TreeNode
 class Genealogy
 {
 private:
-	TreeNode * _root = NULL;		//家谱的根节点
+	TreeNode * _root = NULL;		//家谱的根结点
 public:
 	Genealogy() = default;
 	Genealogy(const string &buf);
@@ -44,12 +44,12 @@ public:
 	bool isEmpty() { return _root == NULL; }	//判断家谱是否为空
 	void DestroyGenealogy(TreeNode *root);		//销毁树中所有结点
 
-	void showRoot();								//输出根节点
+	void showRoot();								//输出根结点
 	void showFirstGenChild(const TreeNode *root);	//输出第一代子孙
 	void showTree();								//分层输出树中所有结点
 
 	TreeNode *findPeople(TreeNode *root, const string &name);	//寻找某个人是否在家谱中
-	TreeNode *findParent(TreeNode *root, const TreeNode *buf);	//寻找某个人的父节点
+	TreeNode *findParent(TreeNode *root, const TreeNode *buf);	//寻找某个人的父结点
 
 	void BuildFamily();			//建立家庭
 	void addChild();			//添加家庭成员
@@ -175,14 +175,14 @@ Genealogy::~Genealogy()
 {
 	DestroyGenealogy(_root);		//调用destroy函数, 一次释放树中所有结点
 
-	delete _root;	//释放根节点
+	delete _root;	//释放根结点
 	_root = NULL;
 }
 
 void Genealogy::DestroyGenealogy(TreeNode *root)
 {
 	if (root->Child.empty())
-		//如果该结点为叶子节点 -> 孩子数组为空
+		//如果该结点为叶子结点 -> 孩子数组为空
 	{
 		delete root;	//释放该结点
 		root = NULL;
@@ -223,7 +223,7 @@ void Genealogy::showTree()
 	}
 
 	queue<TreeNode *> Q;				//层次化访问工作队列
-	Q.push(this->_root);				//压入根节点
+	Q.push(this->_root);				//压入根结点
 
 	TreeNode buf(People(ERRORNAME));	//定义分隔结点
 
@@ -239,7 +239,7 @@ void Genealogy::showTree()
 		{
 			Q.pop();
 			for (const auto& elem : move.Child)
-				//将当前节点的所有孩子压入队列
+				//将当前结点的所有孩子压入队列
 			{
 				Q.push(elem);
 			}
@@ -258,14 +258,14 @@ void Genealogy::showTree()
 
 TreeNode * Genealogy::findPeople(TreeNode *root, const string &name)
 {
-	if (root->data.name == name)		//如果当前节点为寻找对象, 返回它的指针
+	if (root->data.name == name)		//如果当前结点为寻找对象, 返回它的指针
 	{ return root; }
-	else if (root->Child.empty())		//如果当前节点为叶结点, 返回空指针
+	else if (root->Child.empty())		//如果当前结点为叶结点, 返回空指针
 	{ return NULL; }
 	else
 	{
 		for (auto &buf : root->Child)
-			//在当前节点的所有孩子中, 递归调用搜索函数
+			//在当前结点的所有孩子中, 递归调用搜索函数
 		{
 			TreeNode* flag = findPeople(buf,name);
 			if (flag) { return flag; }
@@ -277,7 +277,7 @@ TreeNode * Genealogy::findPeople(TreeNode *root, const string &name)
 
 TreeNode * Genealogy::findParent(TreeNode * root, const TreeNode *buf)
 {
-	if (root->Child.empty())	//如果该结点为叶节点, 则一定不是任何结点的parent
+	if (root->Child.empty())	//如果该结点为叶结点, 则一定不是任何结点的parent
 	{ return NULL; }
 
 	if(find(root->Child.begin(),root->Child.end(),buf) != root->Child.end())
@@ -304,8 +304,14 @@ void Genealogy::BuildFamily()
 		//如果存在该 待创建家庭的结点
 	{
 		int size;
-		cout << "请输入" << *move << "的儿女人数: ";
-		cin >> size;
+		while (1)
+		{
+			cout << "请输入" << *move << "的儿女人数: ";
+			cin >> size;
+			if (size > 0) { break; }
+			else { cout << "输入错误！" << endl; }
+		}
+
 
 		cout << "请依次输入" << *move << "的儿女的姓名: ";
 		for (int i = 0; i < size; ++i)
@@ -339,7 +345,7 @@ void Genealogy::addChild()
 		cout << "请输入" << *parent << "新添加的儿子(或女儿)的姓名: ";
 		cin >> *fresh;
 
-		parent->Child.push_back(fresh);		//添加到当前节点的孩子数组后面
+		parent->Child.push_back(fresh);		//添加到当前结点的孩子数组后面
 
 		this->showFirstGenChild(parent);	//输出添加儿子后 该结点的第一代子孙
 	}
@@ -357,7 +363,7 @@ void Genealogy::removeFamily()
 
 	TreeNode *move = findPeople(_root, name);
 	if (move == _root)
-		//如果解散的根节点特殊处理
+		//如果解散的根结点特殊处理
 	{
 		cout << "要解散家庭的人是: " << *move << endl;
 		this->showFirstGenChild(move);		//输出下一代子孙
@@ -373,7 +379,7 @@ void Genealogy::removeFamily()
 		cout << "要解散家庭的人是: " << *move << endl;
 		this->showFirstGenChild(move);		//输出下一代子孙
 
-		this->DestroyGenealogy(move);		//递归destroy函数, 递归的删除该结点作为根节点的子树
+		this->DestroyGenealogy(move);		//递归destroy函数, 递归的删除该结点作为根结点的子树
 
 		//先在parent的孩子数组中把他一出
 		TreeNode *parent = findParent(_root, move);
