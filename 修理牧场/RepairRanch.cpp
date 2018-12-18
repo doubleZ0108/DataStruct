@@ -7,9 +7,15 @@
 #include <algorithm>
 using namespace std;
 
-//º¯Êı²ÎÊı²»ÄÜ´«reference£¬·ñÔòµ÷ÓÃÒ»¸öËã·¨Ö®ºówoodsÀï¾Í¿ÕÁË
+//å‡½æ•°å‚æ•°ä¸èƒ½ä¼ referenceï¼Œå¦åˆ™è°ƒç”¨ä¸€ä¸ªç®—æ³•ä¹‹åwoodsé‡Œå°±ç©ºäº†
 void RepairRanch_normal(vector<int> woods, int N)
 {
+	if (N == 1)				//åªæœ‰ä¸€å—æœ¨å¤´åšç‰¹æ®Šå¤„ç†
+	{
+		cout << woods[0] << endl;
+		return;
+	}
+	
 	int cost = 0;
 	vector<int>::iterator bufiter;
 	int save;
@@ -36,27 +42,33 @@ void RepairRanch_preQueue(vector<int> woods, int N)
 {
 	int buf, cost = 0;
 	priority_queue<int, vector<int>, greater<int> > less_pre_queue;
-			//Ê¹ÓÃÓÅÏÈ¶ÓÁĞ´æ´¢
+			//ä½¿ç”¨ä¼˜å…ˆé˜Ÿåˆ—å­˜å‚¨
 
 	for (int i = 0; i < N; ++i)
-		//ÒÀ´Î°Ñ¸÷¿éÄ¾Í·µÄ³¤¶È¼ÓÈëµ½ÓÅÏÈ¶ÓÁĞÖĞ
+		//ä¾æ¬¡æŠŠå„å—æœ¨å¤´çš„é•¿åº¦åŠ å…¥åˆ°ä¼˜å…ˆé˜Ÿåˆ—ä¸­
 	{
 		less_pre_queue.push(woods[i]);
 	}
-
+	
+	if (N == 1)				//åªæœ‰ä¸€å—æœ¨å¤´è¦åšç‰¹æ®Šå¤„ç†
+	{
+		cout << less_pre_queue.top() << endl;
+		return;
+	}
+	
 	int first, second;
 	for (int i = 0; i < N - 1; ++i)
 	{
-		/*Ã¿´ÎÈ¡³ö×îĞ¡µÄÁ½¿éÄ¾Í·*/
+		/*æ¯æ¬¡å–å‡ºæœ€å°çš„ä¸¤å—æœ¨å¤´*/
 		first = less_pre_queue.top();
 		less_pre_queue.pop();
 		second = less_pre_queue.top();
 		less_pre_queue.pop();
 
-		/*°ÑÕâÁ½¿éÄ¾Í·Æ´³ÉµÄ³¤Ä¾Í·³¤¶ÈÖØĞÂ¼ÓÈëÓÅÏÈ¶ÓÁĞÖĞ*/
+		/*æŠŠè¿™ä¸¤å—æœ¨å¤´æ‹¼æˆçš„é•¿æœ¨å¤´é•¿åº¦é‡æ–°åŠ å…¥ä¼˜å…ˆé˜Ÿåˆ—ä¸­*/
 		less_pre_queue.push(first + second);
 
-		/*³ê½ğ¼ÓÉÏÕâÁ½¿éÄ¾Í·µÄ³¤¶È*/
+		/*é…¬é‡‘åŠ ä¸Šè¿™ä¸¤å—æœ¨å¤´çš„é•¿åº¦*/
 		cost += first + second;
 	}
 
@@ -73,9 +85,9 @@ int main(void)
 		cin >> woods[i];
 	}
 	
-	cout << "vector×÷Îª´æ´¢½á¹¹£¬Ã¿´ÎÈË¹¤ÕÒ×îĞ¡µÄ£º";
+	cout << "vectorä½œä¸ºå­˜å‚¨ç»“æ„ï¼Œæ¯æ¬¡äººå·¥æ‰¾æœ€å°çš„ï¼š";
 	RepairRanch_normal(woods, woods.size());
-	cout << "ÓÅÏÈ¶ÓÁĞ£º";
+	cout << "ä¼˜å…ˆé˜Ÿåˆ—ï¼š";
 	RepairRanch_preQueue(woods, woods.size());
 
 	system("pause");
