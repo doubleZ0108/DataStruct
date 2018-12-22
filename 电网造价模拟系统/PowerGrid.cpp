@@ -6,24 +6,23 @@
 #include <algorithm>
 using namespace std;
 
-typedef char Vertex;
-struct Edge
+typedef char Vertex;		//顶点的表示
+struct Edge					//边的表示
 {
-	Vertex v1, v2;
-	int cost;
+	Vertex v1, v2;	//边的两个端点
+	int cost;		//边的长度
 };
 
 class PowerGrid
 {
 private:
-	vector<Vertex> _vertex;			//顶点
-	vector<Edge> _edge;				//边
+	vector<Vertex> _vertex;			//顶点集合
+	vector<Edge> _edge;				//边集合
 
 public:
-	PowerGrid() = default;
-	PowerGrid(int VertexSize);
+	PowerGrid();
 
-	bool InitVertex();
+	bool InitVertex(int size);			//存储各顶点名称
 	int VertexSize()const { return this->_vertex.size(); }	//返回顶点总数
 	int EdgeSize()const { return this->_edge.size(); }		//返回边的总数
 };
@@ -38,6 +37,8 @@ int main(void)
 	cout << "**             " << "D --- 显示最小生成树" << "         **" << endl;
 	cout << "**             " << "E --- 退出程序" << "               **" << endl;
 
+	//创建电网对象
+	PowerGrid grid;
 
 	/*用户操作*/
 	char OpCode;
@@ -51,6 +52,24 @@ int main(void)
 		{
 		case 'A':
 		{
+			int sumVervex;
+			while (true)
+			{
+				cout << "请输入顶点的个数: ";
+				cin >> sumVervex;
+				if (sumVervex > 0) { break; }
+				else
+				{
+					cerr << "顶点的个数为非负整数, 请重新输入" << endl;
+				}
+			}
+
+			getchar();
+			while (!grid.InitVertex(sumVervex))
+			{
+				;
+			}
+
 			break;
 		}
 		case 'B':
@@ -77,28 +96,31 @@ int main(void)
 	return 0;
 }
 
-PowerGrid::PowerGrid(int VertexSize)
+PowerGrid::PowerGrid()
 {
 	this->_vertex.clear();
-	this->_vertex.resize(VertexSize);
 	this->_edge.clear();
 }
 
-bool PowerGrid::InitVertex()
+bool PowerGrid::InitVertex(int size)
 {
-	///////////在进行操作A创建电网顶点时输入的顶点名称个数不得超过顶点个数
-	
+	this->_vertex.resize(size);
+
 	cout << "请依次输入各顶点的名称:(单个字母) " << endl;
+
 	string buf;
 	getline(cin, buf);
 
 	int cnt = 0;
 	for (int i = 0; i < buf.size(); ++i)
 	{
-		if (isspace(buf[i])) { continue; }
+		if (isspace(buf[i])) 		//跳过空格
+		{ continue; }
 		else if (isalpha(buf[i]))
+			//如果是字母的话读入
 		{
 			if (cnt < this->_vertex.size())
+				//当输入的顶点名称个数小于顶点个数时,储存该名称
 			{
 				this->_vertex[cnt] = buf[i];
 				++cnt;
@@ -116,5 +138,11 @@ bool PowerGrid::InitVertex()
 		}
 	}
 	
+	if (cnt < this->_vertex.size())
+	{
+		cerr << "输入的顶点名称个数不得少于顶点个数, 请重新创建所有顶点" << endl;
+		return false;
+	}
+
 	return true;
 }
