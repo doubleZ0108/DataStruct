@@ -32,6 +32,8 @@ class PowerGrid
 {
 	friend class Branch;
 private:
+	bool isconnect = true;			//电网是否连通
+
 	vector<Vertex> _vertex;			//顶点集合
 	vector<Edge> _edge;				//边集合
 	vector<Edge> _minSpanTree;		//最小生成树
@@ -125,10 +127,18 @@ int main(void)
 		case 'C':
 		{
 			Vertex start;
-			cout << "请输入起始点: ";
-			cin >> start;
+			while (true)
+			{
+				cout << "请输入起始点: ";
+				cin >> start;
+				if (grid.isVertex(start)) { break; }
+				else { cerr << "起始点必须为电网顶点, 请重新输入!" << endl; }
+			}
 
-			grid.Prim(start);
+			if (!grid.Prim(start))
+			{
+				cerr << "该电网不连通, 最小生成树构建失败!" << endl;
+			}
 
 			break;
 		}
@@ -284,6 +294,7 @@ bool PowerGrid::Prim(Vertex start)
 		if (this->_minSpanTree.back().isemptyEdge())
 			//如果存在空边, 该电网不构成网络
 		{
+			this->isconnect = false;
 			return false;
 		}
 
@@ -296,10 +307,11 @@ bool PowerGrid::Prim(Vertex start)
 Edge PowerGrid::findminEdge(const vector<Branch>& branch)
 {
 	int mincost = INFINITE;
-	Edge minEdge;
+	Edge minEdge('?', '?', 0);
 
 	for (int i = 0; i < branch.size(); ++i)
 	{
+		if (branch[i].priQ.empty()) { return minEdge; }
 		if (branch[i].priQ.top().cost < mincost)
 			//如果找到更小的边则更新minEdge
 		{
@@ -334,6 +346,11 @@ void PowerGrid::growBranch(vector<Branch> &branch)
 
 void PowerGrid::showSpanTree()
 {
+	if (!this->isconnect)
+	{
+		cerr << "该电网不连通, 最小生成树输出失败!" << endl;
+		return;
+	}
 	for (int i = 0; i < this->_minSpanTree.size(); ++i)
 	{
 		cout << _minSpanTree[i] << "	 ";
