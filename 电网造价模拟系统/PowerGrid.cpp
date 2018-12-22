@@ -3,6 +3,7 @@
 #include <cctype>
 #include <string>
 #include <vector>
+#include <queue>
 #include <algorithm>
 using namespace std;
 
@@ -11,20 +12,56 @@ struct Edge					//边的表示
 {
 	Vertex v1, v2;	//边的两个端点
 	int cost;		//边的长度
+
+	Edge() = default;
+	Edge(int buf1, int buf2, int bufcost);
+	
+	bool operator<(const Edge &buf) const
+	{return this->cost < buf.cost;}
 };
+
+class cmp
+	//创建仿函数用于构建优先队列
+{
+public:
+	bool operator()(const Edge &e1, const Edge &e2)const
+	{
+		return e1 < e2;
+	}
+};
+class Branch
+	//顶点和与该顶点关联的边
+{
+private:
+	Vertex v;
+	priority_queue<Edge, vector<Edge>, cmp> priQ;	//与该顶点关联的边构成的优先队列
+
+public:
+	Branch() = default;
+	Branch(Vertex buf, const PowerGrid &root);
+};
+
+
 
 class PowerGrid
 {
+	friend class Branch;
 private:
 	vector<Vertex> _vertex;			//顶点集合
 	vector<Edge> _edge;				//边集合
+	vector<Edge> _minSpanTree;		//最小生成树
 
 public:
 	PowerGrid();
 
-	bool InitVertex(int size);			//存储各顶点名称
 	int VertexSize()const { return this->_vertex.size(); }	//返回顶点总数
 	int EdgeSize()const { return this->_edge.size(); }		//返回边的总数
+
+	bool InitVertex(int size);			//创建电网顶点
+	void addEdges();					//添加电网的边
+	bool isVertex(Vertex buf);			//判断某个点是否为电网的顶点
+	
+	bool Prim(Vertex start);
 };
 
 int main(void)
@@ -74,6 +111,7 @@ int main(void)
 		}
 		case 'B':
 		{
+			grid.addEdges();
 			break;
 		}
 		case 'C':
@@ -96,11 +134,30 @@ int main(void)
 	return 0;
 }
 
-PowerGrid::PowerGrid()
+///////////////////////////////////////////////////
+Edge::Edge(int buf1, int buf2, int bufcost)
+	:v1(buf1), v2(buf2), cost(bufcost) {}
+///////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////
+
+Branch::Branch(Vertex buf, const PowerGrid & root)
 {
-	this->_vertex.clear();
-	this->_edge.clear();
+	for (int i = 0; i < root.EdgeSize(); ++i)
+	{
+		if (root._edge[i].v1 == buf || root._edge[i].v2 == buf)
+			//如果电网中有某条边以buf为顶点, 则把他加入该结点的优先队列
+		{
+			this->priQ.push(root._edge[i]);
+		}
+	}
 }
+///////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////
+PowerGrid::PowerGrid()
 
 bool PowerGrid::InitVertex(int size)
 {
@@ -146,3 +203,52 @@ bool PowerGrid::InitVertex(int size)
 
 	return true;
 }
+
+void PowerGrid::addEdges()
+{
+	Vertex bufv1, bufv2;
+	int bufcost;
+
+	cout << "以 ? ? 0 作为结束标识符!" << endl;
+	while (true)
+	{
+		cout << "请输入两个顶点及边: ";
+		cin >> bufv1 >> bufv2 >> bufcost;
+
+		if (bufv1 == '?' && bufv2 == '?' && bufcost == 0)	//读到结束标识符退出读入
+		{ break; }
+		if (isVertex(bufv1) && isVertex(bufv2))
+			//如果输入的两个顶点都在电网顶点中
+		{
+			if (bufcost > 0)
+			{
+				this->_edge.push_back(Edge(bufv1, bufv2, bufcost));
+			}
+			else
+			{
+				cerr << "两顶点间的花费应为正整数" << endl;
+				continue;
+			}
+		}
+		else
+		{
+			cerr << "请输入电网中存在的顶点" << endl;
+			continue;
+		}
+	}
+}
+
+bool PowerGrid::isVertex(Vertex buf)
+{
+	return (find(this->_vertex.begin(), this->_vertex.end(), buf) 
+		!= this->_vertex.end());
+}
+
+bool PowerGrid::Prim(Vertex start)
+{
+	vector<Branch> branch;
+	branch.push_back(Branch(start, *this));
+}
+///////////////////////////////////////////////////
+
+
