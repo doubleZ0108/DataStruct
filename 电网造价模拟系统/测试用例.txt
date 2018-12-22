@@ -1,0 +1,29 @@
+A
+4
+a b c d
+B
+a b 8
+b c 7
+c d 5
+d a 11
+a c 18
+b d 12
+? ? 0
+C
+a
+D
+E
+
+
+//无法构成网络样例
+A
+4
+a b c d
+B
+a d 5
+b c 9
+? ? 0
+C
+a
+D
+E
