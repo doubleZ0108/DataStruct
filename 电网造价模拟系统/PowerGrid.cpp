@@ -13,6 +13,8 @@ const int INFINITE = 1 << 30;	//无限大
 typedef char Vertex;		//顶点的表示
 struct Edge					//边的表示
 {
+	friend ostream& operator<<(ostream & os, const Edge &buf);
+
 	Vertex v1, v2;	//边的两个端点
 	int cost;		//边的长度
 
@@ -47,6 +49,8 @@ public:
 	bool Prim(Vertex start);			//求最小生成树的Prim算法
 	Edge findminEdge(const vector<Branch> &branch);	//求当前的最小cost的边
 	void growBranch(vector<Branch> &branch);		//把树内结点加入到branch中
+
+	void showSpanTree();
 };
 
 class cmp
@@ -130,6 +134,8 @@ int main(void)
 		}
 		case 'D':
 		{
+			grid.showSpanTree();
+
 			break;
 		}
 		default:
@@ -147,6 +153,12 @@ int main(void)
 ///////////////////////////////////////////////////
 Edge::Edge(int buf1, int buf2, int bufcost)
 	:v1(buf1), v2(buf2), cost(bufcost) {}
+
+ostream & operator<<(ostream & os, const Edge & buf)
+{
+	os << buf.v1 << "-(" << buf.cost << ")->" << buf.v2;
+	return os;
+}
 ///////////////////////////////////////////////////
 
 
@@ -318,6 +330,15 @@ void PowerGrid::growBranch(vector<Branch> &branch)
 			break;
 		}
 	}
+}
+
+void PowerGrid::showSpanTree()
+{
+	for (int i = 0; i < this->_minSpanTree.size(); ++i)
+	{
+		cout << _minSpanTree[i] << "	 ";
+	}
+	cout << endl;
 }
 ///////////////////////////////////////////////////
 
