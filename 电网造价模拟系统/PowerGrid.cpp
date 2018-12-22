@@ -7,6 +7,9 @@
 #include <algorithm>
 using namespace std;
 
+const int INFINITE = 1 << 30;	//无限大
+
+
 typedef char Vertex;		//顶点的表示
 struct Edge					//边的表示
 {
@@ -16,31 +19,11 @@ struct Edge					//边的表示
 	Edge() = default;
 	Edge(int buf1, int buf2, int bufcost);
 	
-	bool operator<(const Edge &buf) const
-	{return this->cost < buf.cost;}
-};
+	bool operator>(const Edge &buf) const
+	{return this->cost > buf.cost;}
 
-class cmp
-	//创建仿函数用于构建优先队列
-{
-public:
-	bool operator()(const Edge &e1, const Edge &e2)const
-	{
-		return e1 < e2;
-	}
+	bool isemptyEdge() { return (v1 == '?' && v2 == '?' && cost == 0); }	//判断某条边是否为空边
 };
-class Branch
-	//顶点和与该顶点关联的边
-{
-private:
-	Vertex v;
-	priority_queue<Edge, vector<Edge>, cmp> priQ;	//与该顶点关联的边构成的优先队列
-
-public:
-	Branch() = default;
-	Branch(Vertex buf, const PowerGrid &root);
-};
-
 
 
 class PowerGrid
@@ -61,7 +44,28 @@ public:
 	void addEdges();					//添加电网的边
 	bool isVertex(Vertex buf);			//判断某个点是否为电网的顶点
 	
-	bool Prim(Vertex start);
+	bool Prim(Vertex start);			//求最小生成树的Prim算法
+	Edge findminEdge(const vector<Branch> &branch);	//求当前的最小cost的边
+	void growBranch(vector<Branch> &branch);		//把树内结点加入到branch中
+};
+
+class cmp
+	//创建仿函数用于构建优先队列
+{
+public:
+	bool operator()(const Edge &e1, const Edge &e2)const
+	{
+		return e1 > e2;
+	}
+};
+struct Branch
+	//顶点和与该顶点关联的边
+{
+	Vertex v;
+	priority_queue<Edge, vector<Edge>, cmp> priQ;	//与该顶点关联的边构成的优先队列
+
+	Branch() = default;
+	Branch(const Vertex &buf, const PowerGrid &root);
 };
 
 int main(void)
@@ -116,6 +120,12 @@ int main(void)
 		}
 		case 'C':
 		{
+			Vertex start;
+			cout << "请输入起始点: ";
+			cin >> start;
+
+			grid.Prim(start);
+
 			break;
 		}
 		case 'D':
@@ -141,10 +151,12 @@ Edge::Edge(int buf1, int buf2, int bufcost)
 
 
 ///////////////////////////////////////////////////
-
-Branch::Branch(Vertex buf, const PowerGrid & root)
+Branch::Branch(const Vertex &buf, const PowerGrid & root)
 {
+	this->v = buf;		//该点保存在v中
+
 	for (int i = 0; i < root.EdgeSize(); ++i)
+		//把与该点关联的所有边加入优先队列中
 	{
 		if (root._edge[i].v1 == buf || root._edge[i].v2 == buf)
 			//如果电网中有某条边以buf为顶点, 则把他加入该结点的优先队列
@@ -158,6 +170,10 @@ Branch::Branch(Vertex buf, const PowerGrid & root)
 
 ///////////////////////////////////////////////////
 PowerGrid::PowerGrid()
+{
+	this->_vertex.clear();
+	this->_edge.clear();
+}
 
 bool PowerGrid::InitVertex(int size)
 {
@@ -206,23 +222,22 @@ bool PowerGrid::InitVertex(int size)
 
 void PowerGrid::addEdges()
 {
-	Vertex bufv1, bufv2;
-	int bufcost;
+	Edge buf;
 
 	cout << "以 ? ? 0 作为结束标识符!" << endl;
 	while (true)
 	{
 		cout << "请输入两个顶点及边: ";
-		cin >> bufv1 >> bufv2 >> bufcost;
+		cin >> buf.v1 >> buf.v2 >> buf.cost;
 
-		if (bufv1 == '?' && bufv2 == '?' && bufcost == 0)	//读到结束标识符退出读入
+		if (buf.isemptyEdge())	//读到结束标识符退出读入
 		{ break; }
-		if (isVertex(bufv1) && isVertex(bufv2))
+		if (isVertex(buf.v1) && isVertex(buf.v2))
 			//如果输入的两个顶点都在电网顶点中
 		{
-			if (bufcost > 0)
+			if (buf.cost > 0)
 			{
-				this->_edge.push_back(Edge(bufv1, bufv2, bufcost));
+				this->_edge.push_back(buf);
 			}
 			else
 			{
@@ -247,7 +262,62 @@ bool PowerGrid::isVertex(Vertex buf)
 bool PowerGrid::Prim(Vertex start)
 {
 	vector<Branch> branch;
-	branch.push_back(Branch(start, *this));
+	branch.push_back(Branch(start, *this));				//先把起始点压入branch中
+
+	for (int i = 0; i < this->VertexSize()-1; ++i)
+		//n个顶点只需选出n-1条边
+	{
+		this->_minSpanTree.push_back(findminEdge(branch));		//把最小cost的边加入到最小生成树中
+		
+		if (this->_minSpanTree.back().isemptyEdge())
+			//如果存在空边, 该电网不构成网络
+		{
+			return false;
+		}
+
+		growBranch(branch);		//更新最小生成树的树内顶点关联的边
+	}
+	
+	return true;
+}
+
+Edge PowerGrid::findminEdge(const vector<Branch>& branch)
+{
+	int mincost = INFINITE;
+	Edge minEdge;
+
+	for (int i = 0; i < branch.size(); ++i)
+	{
+		if (branch[i].priQ.top().cost < mincost)
+			//如果找到更小的边则更新minEdge
+		{
+			mincost = branch[i].priQ.top().cost;
+			minEdge = branch[i].priQ.top();
+		}
+	}
+
+	return minEdge;
+}
+
+void PowerGrid::growBranch(vector<Branch> &branch)
+{
+	Vertex bufv1 = this->_minSpanTree.back().v1, bufv2 = this->_minSpanTree.back().v2;
+
+	for (int i = 0; i < branch.size(); ++i)
+	{
+		if (branch[i].v == bufv1)
+		{
+			branch[i].priQ.pop();			//把已经加入生成树的边去掉
+			branch.push_back(Branch(bufv2, *this));
+			break;
+		}
+		else if (branch[i].v == bufv2)
+		{
+			branch[i].priQ.pop();			//把已经加入生成树的边去掉
+			branch.push_back(Branch(bufv1, *this));
+			break;
+		}
+	}
 }
 ///////////////////////////////////////////////////
 
