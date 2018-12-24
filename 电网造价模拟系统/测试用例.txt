@@ -27,3 +27,17 @@ C
 a
 D
 E
+
+
+A
+4
+a b c d
+B
+a b 3
+b c 5
+c d 7
+? ? 0
+C
+a
+D
+E
