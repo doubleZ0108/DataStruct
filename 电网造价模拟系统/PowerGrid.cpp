@@ -24,9 +24,13 @@ struct Edge					//边的表示
 	bool operator>(const Edge &buf) const
 	{return this->cost > buf.cost;}
 
+	bool operator==(const Edge &buf) const
+	{
+		return (this->v1 == buf.v1 && this->v2 == buf.v2 && this->cost == buf.cost);
+	}
+
 	bool isemptyEdge() { return (v1 == '?' && v2 == '?' && cost == 0); }	//判断某条边是否为空边
 };
-
 
 class PowerGrid
 {
@@ -52,7 +56,7 @@ public:
 	Edge findminEdge(const vector<Branch> &branch);	//求当前的最小cost的边
 	void growBranch(vector<Branch> &branch);		//把树内结点加入到branch中
 
-	void showSpanTree();
+	void showSpanTree();				//显示最小生成树
 };
 
 class cmp
@@ -72,6 +76,9 @@ struct Branch
 
 	Branch() = default;
 	Branch(const Vertex &buf, const PowerGrid &root);
+
+	bool operator==(const Branch& buf)const 
+	{return (this->v == buf.v);}
 };
 
 int main(void)
@@ -175,7 +182,7 @@ ostream & operator<<(ostream & os, const Edge & buf)
 ///////////////////////////////////////////////////
 Branch::Branch(const Vertex &buf, const PowerGrid & root)
 {
-	this->v = buf;		//该点保存在v中
+	this->v = '?';
 
 	for (int i = 0; i < root.EdgeSize(); ++i)
 		//把与该点关联的所有边加入优先队列中
@@ -183,6 +190,7 @@ Branch::Branch(const Vertex &buf, const PowerGrid & root)
 		if (root._edge[i].v1 == buf || root._edge[i].v2 == buf)
 			//如果电网中有某条边以buf为顶点, 则把他加入该结点的优先队列
 		{
+			this->v = buf;		//该点保存在v中
 			this->priQ.push(root._edge[i]);
 		}
 	}
@@ -311,7 +319,9 @@ Edge PowerGrid::findminEdge(const vector<Branch>& branch)
 
 	for (int i = 0; i < branch.size(); ++i)
 	{
-		if (branch[i].priQ.empty()) { return minEdge; }
+		if (branch[i].priQ.empty()) { //return minEdge; 
+			continue;
+		}
 		if (branch[i].priQ.top().cost < mincost)
 			//如果找到更小的边则更新minEdge
 		{
@@ -326,18 +336,41 @@ Edge PowerGrid::findminEdge(const vector<Branch>& branch)
 void PowerGrid::growBranch(vector<Branch> &branch)
 {
 	Vertex bufv1 = this->_minSpanTree.back().v1, bufv2 = this->_minSpanTree.back().v2;
+	Edge lastEdge = this->_minSpanTree.back();
 
 	for (int i = 0; i < branch.size(); ++i)
 	{
 		if (branch[i].v == bufv1)
 		{
-			branch[i].priQ.pop();			//把已经加入生成树的边去掉
+			/*在电网的边中删除这个边*/
+			auto iter2 = find(this->_edge.begin(), this->_edge.end(), lastEdge);
+			this->_edge.erase(iter2, iter2 + 1);
+
+			/*更新一遍刚才选出最小边的位置*/
+			branch.erase(branch.begin() + i, branch.begin() + i + 1);	//把原来的删除
+			Branch refresh = Branch(bufv1, *this);						//如果更新后还有与这个点关联的边
+			if (refresh.v != '?')
+			{
+				branch.push_back(refresh);		//把他更新之后的加入
+			}
+
 			branch.push_back(Branch(bufv2, *this));
+
 			break;
 		}
 		else if (branch[i].v == bufv2)
 		{
-			branch[i].priQ.pop();			//把已经加入生成树的边去掉
+			/*在电网的边中删除这个边*/
+			auto iter2 = find(this->_edge.begin(), this->_edge.end(), lastEdge);
+			this->_edge.erase(iter2, iter2 + 1);
+
+			branch.erase(branch.begin() + i, branch.begin() + i + 1);
+			Branch refresh = Branch(bufv2, *this);
+			if (refresh.v != '?')
+			{
+				branch.push_back(refresh);
+			}
+
 			branch.push_back(Branch(bufv1, *this));
 			break;
 		}
