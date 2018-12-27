@@ -4,6 +4,8 @@
 #include <algorithm>
 using namespace std;
 
+#define INFINITE 1<<30
+
 typedef int Vertex;
 struct Edge
 {
@@ -35,6 +37,8 @@ public:
 	int getWeight(const Vertex &v1, const Vertex &v2);
 
 	void CriticialPath();
+	void calculateVe();
+	void calculateVl();
 };
 int main(void)
 {
@@ -71,7 +75,7 @@ Activity::Activity(int VertexNum, int EdgeNum)
 	InitEdges();
 
 	Ve.resize(VertexNum, 0);
-	Vl.resize(VertexNum, 0);
+	Vl.resize(VertexNum, INFINITE);
 	Ae.resize(EdgeNum, 0);
 	Al.resize(EdgeNum, 0);
 }
@@ -157,6 +161,14 @@ int Activity::getWeight(const Vertex & v1, const Vertex & v2)
 
 void Activity::CriticialPath()
 {
+	this->calculateVe();
+	this->calculateVl();
+
+	for_each(Vl.begin(), Vl.end(), [](int n) {cout << n << ' '; });
+}
+
+void Activity::calculateVe()
+{
 	int i, j, w;
 
 	for (i = 0; i < this->vertex.size(); ++i)
@@ -169,6 +181,21 @@ void Activity::CriticialPath()
 			j = getNextNeighbour(i, j);
 		}
 	}
+}
 
-	for_each(Ve.begin(), Ve.end(), [](int n) {cout << n << ' '; });
+void Activity::calculateVl()
+{
+	int j, k, w;
+
+	Vl[this->vertex.size() - 1] = Ve[this->vertex.size() - 1];
+	for (j = this->vertex.size() - 2; j >= 0; --j)
+	{
+		k = getFirstNeighbour(j);
+		while (k != -1)
+		{
+			w = getWeight(j, k);
+			if (Vl[k] - w < Vl[j]) { Vl[j] = Vl[k] - w; }
+			k = getNextNeighbour(j, k);
+		}
+	}
 }
