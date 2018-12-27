@@ -22,7 +22,7 @@ private:
 	vector<Edge> edge;
 
 	vector<int> Ve, Vl;
-	vector<int> Ae, Al;
+	int Ae, Al;
 public:
 	Activity() = default;
 	Activity(int VertexNum, int EdgeNum);
@@ -40,6 +40,7 @@ public:
 	void calculateVe();
 	void calculateVl();
 };
+
 int main(void)
 {
 	int VertexNum, EdgeNum;
@@ -75,9 +76,7 @@ Activity::Activity(int VertexNum, int EdgeNum)
 	InitEdges();
 
 	Ve.resize(VertexNum, 0);
-	Vl.resize(VertexNum, INFINITE);
-	Ae.resize(EdgeNum, 0);
-	Al.resize(EdgeNum, 0);
+	Vl.resize(VertexNum, INFINITE);			//因为最迟时间是取最小的, 所以要初始化为无穷大
 }
 
 void Activity::InitVertexs()
@@ -164,7 +163,23 @@ void Activity::CriticialPath()
 	this->calculateVe();
 	this->calculateVl();
 
-	for_each(Vl.begin(), Vl.end(), [](int n) {cout << n << ' '; });
+	cout << Vl[this->vertex.size() - 1] << endl;		//输出整个项目所需要的时间
+
+	for (int i = 0; i < this->edge.size(); ++i)
+	{
+		int j = getFirstNeighbour(i);
+		while (j != -1)
+		{
+			Ae = Ve[i];
+			Al = Vl[j] - getWeight(i, j);
+
+			if (Al == Ae)
+			{
+				cout << i + 1 << "->" << j + 1 << endl;
+			}
+			j = getNextNeighbour(i, j);
+		}
+	}
 }
 
 void Activity::calculateVe()
