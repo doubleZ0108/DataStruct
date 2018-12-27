@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <vector>
+#include <stack>
 #include <algorithm>
 using namespace std;
 
@@ -165,6 +166,8 @@ void Activity::CriticialPath()
 
 	cout << Vl[this->vertex.size() - 1] << endl;		//输出整个项目所需要的时间
 
+	stack<int> S;
+
 	for (int i = 0; i < this->edge.size(); ++i)
 	{
 		int j = getFirstNeighbour(i);
@@ -175,9 +178,16 @@ void Activity::CriticialPath()
 
 			if (Al == Ae)
 			{
-				cout << i + 1 << "->" << j + 1 << endl;
+				//cout << i + 1 << "->" << j + 1 << endl;
+				S.push(j);
 			}
 			j = getNextNeighbour(i, j);
+		}
+
+		while (!S.empty())
+		{
+			cout << i + 1 << "->" << S.top() + 1 << endl;
+			S.pop();
 		}
 	}
 }
