@@ -166,7 +166,7 @@ void Activity::CriticialPath()
 
 	cout << Vl[this->vertex.size() - 1] << endl;		//输出整个项目所需要的时间
 
-	stack<int> S;
+	vector<int> vec;
 
 	for (int i = 0; i < this->edge.size(); ++i)
 	{
@@ -179,16 +179,28 @@ void Activity::CriticialPath()
 			if (Al == Ae)
 			{
 				//cout << i + 1 << "->" << j + 1 << endl;
-				S.push(j);
+				vec.push_back(j);
 			}
 			j = getNextNeighbour(i, j);
 		}
 
-		while (!S.empty())
+		/////////////////////////////////////
+		for (int k = 0; k < vec.size(); ++k)
 		{
-			cout << i + 1 << "->" << S.top() + 1 << endl;
-			S.pop();
+			for (int row = this->edge.size()-1; row >=0; --row)
+			{
+				if (edge[row].v1 == i)
+				{
+					auto iter = find(vec.begin(), vec.end(), edge[row].v2);
+					if (iter != vec.end())
+					{
+						cout << i + 1 << "->" << *iter + 1 << endl;
+						vec.erase(iter, iter + 1);
+					}
+				}
+			}
 		}
+		/////////////////////////////////////
 	}
 }
 
