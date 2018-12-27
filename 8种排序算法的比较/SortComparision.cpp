@@ -91,6 +91,39 @@ void BubbleSort(vector<int> sequence)
 	record.showTime();
 	record.showExchange();
 }
+/*—°‘Ò≈≈–Ú*/
+void SelectSort(vector<int> sequence)
+{
+	Time_Swap record("√∞≈›≈≈–Ú");
+
+	int minindex;
+
+	record.Start();
+	//////////////////////////////////////////////////////////////////////////
+	for (int i = 0; i < sequence.size() - 1; ++i)
+	{
+		minindex = i;
+		for (int j = i + 1; j < sequence.size(); ++j)
+		{
+			if (sequence[j] < sequence[minindex])
+			{
+				minindex = j;
+			}
+		}
+
+		if (minindex != i)
+		{
+			swap(sequence[i], sequence[minindex]);
+			record.growExchange(3);
+		}
+	}
+	//////////////////////////////////////////////////////////////////////////
+	record.End();
+
+	record.showTime();
+	record.showExchange();
+}
+
 int main(void)
 {
 	cout << "**             " << "≈≈–ÚÀ„∑®±»Ωœ" << "                 **" << endl;
@@ -135,6 +168,7 @@ int main(void)
 			}
 			case 2:
 			{
+				SelectSort(sequence);
 				break;
 			}
 			case 3:
