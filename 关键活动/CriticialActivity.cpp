@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <vector>
 #include <stack>
+#include <queue>
 #include <algorithm>
 using namespace std;
 
@@ -22,14 +23,20 @@ private:
 	vector<Vertex> vertex;
 	vector<Edge> edge;
 
+	vector<int> indegree, outdegree;
+	Vertex start, end;
+
 	vector<int> Ve, Vl;
 	int Ae, Al;
+
+	bool isFeasible = true;
 public:
 	Activity() = default;
 	Activity(int VertexNum, int EdgeNum);
 
 	void InitVertexs();
 	void InitEdges();
+	void Init();
 
 	bool judgeFeasible();				//判断任务调度是否可行
 
@@ -72,9 +79,11 @@ istream& operator>>(istream &is, Edge &buf)
 Activity::Activity(int VertexNum, int EdgeNum)
 {
 	vertex.resize(VertexNum);
-	InitVertexs();
 	edge.resize(EdgeNum);
-	InitEdges();
+	indegree.resize(VertexNum, 0);
+	outdegree.resize(VertexNum, 0);
+
+	Init();
 
 	Ve.resize(VertexNum, 0);
 	Vl.resize(VertexNum, INFINITE);			//因为最迟时间是取最小的, 所以要初始化为无穷大
@@ -101,17 +110,86 @@ void Activity::InitEdges()
 	}
 }
 
-bool Activity::judgeFeasible()
+void Activity::Init()
 {
+	InitVertexs();
+	InitEdges();
+
+	/*寻找起始点和终点*/
+	for (start = 0; start < this->vertex.size(); ++start)
+	{
+		bool flag = false;
+		for (int i = 0; i < this->edge.size(); ++i)
+		{
+			if (this->edge[i].v2 == start) { flag = true; break; }
+		}
+		if (!flag) { break; }
+	}
+	for (end = 0; end < this->vertex.size(); ++end)
+	{
+		bool flag = false;
+		for (int i = 0; i < this->edge.size(); ++i)
+		{
+			if (this->edge[i].v1 == end) { flag = true; break; }
+		}
+		if (!flag) { break; }
+	}
+
+	/*计算入度和出度*/
 	for (int i = 0; i < this->edge.size(); ++i)
 	{
-		if(this->edge[i].v1>this->edge[i].v2)
+		indegree[edge[i].v2]++;
+		outdegree[edge[i].v1]++;
+	}
+
+	if (start < this->vertex.size() && end < this->vertex.size())
+	{
+		indegree[start] = outdegree[end] = 0;
+	}
+	else
+	{
+		this->isFeasible = false;
+	}
+}
+
+bool Activity::judgeFeasible()
+{
+	/*vector<Vertex> copyV(vertex.begin(), vertex.end());
+	vector<Edge> copyE(edge.begin(), edge.end());
+
+	queue<Vertex> Q;
+	Q.push(start);
+	while (!Q.empty())
+	{
+		Vertex now = Q.front();	Q.pop();
+		int j = getFirstNeighbour(now);
+		while (j != -1)
 		{
-			return false;
+			indegree[j]--;
+			j = getNextNeighbour(now, j);
+		}
+
+		for (auto iter = copyV.begin(); iter != copyV.end(); ++iter)
+		{
+			if (*iter == now)
+			{
+				copyV.erase(iter, iter + 1);
+				break;
+			}
+		}
+
+		for (int i = 0; i < copyV.size(); ++i)
+		{
+			if (indegree[copyV[i]] == 0)
+			{
+				Q.push(copyV[i]);
+				break;
+			}
 		}
 	}
 
-	return true;
+	return true;*/
+	return this->isFeasible;
 }
 
 Vertex Activity::getFirstNeighbour(const Vertex & source)
