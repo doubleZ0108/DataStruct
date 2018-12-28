@@ -1,8 +1,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <vector>
-#include <stack>
 #include <queue>
+#include <stack>
 #include <algorithm>
 using namespace std;
 
@@ -23,30 +23,26 @@ private:
 	vector<Vertex> vertex;
 	vector<Edge> edge;
 
-	vector<int> indegree, outdegree;
-	Vertex start, end;
-
 	vector<int> Ve, Vl;
 	int Ae, Al;
 
-	bool isFeasible = true;
+	vector<int> indegree, outdegree;
 public:
 	Activity() = default;
 	Activity(int VertexNum, int EdgeNum);
 
 	void InitVertexs();
 	void InitEdges();
-	void Init();
 
 	bool judgeFeasible();				//判断任务调度是否可行
 
 	Vertex getFirstNeighbour(const Vertex &source);
 	Vertex getNextNeighbour(const Vertex &source, const Vertex &dest);
+	Vertex getLastNeighbour(const Vertex &source);
+	Vertex getBackNeighbour(const Vertex &source, const Vertex &dest);
 	int getWeight(const Vertex &v1, const Vertex &v2);
 
 	void CriticialPath();
-	void calculateVe();
-	void calculateVl();
 };
 
 int main(void)
@@ -79,11 +75,12 @@ istream& operator>>(istream &is, Edge &buf)
 Activity::Activity(int VertexNum, int EdgeNum)
 {
 	vertex.resize(VertexNum);
+	InitVertexs();
 	edge.resize(EdgeNum);
-	indegree.resize(VertexNum, 0);
-	outdegree.resize(VertexNum, 0);
+	InitEdges();
 
-	Init();
+	indegree.resize(VertexNum,0);
+	outdegree.resize(VertexNum, 0);
 
 	Ve.resize(VertexNum, 0);
 	Vl.resize(VertexNum, INFINITE);			//因为最迟时间是取最小的, 所以要初始化为无穷大
@@ -110,86 +107,52 @@ void Activity::InitEdges()
 	}
 }
 
-void Activity::Init()
-{
-	InitVertexs();
-	InitEdges();
-
-	/*寻找起始点和终点*/
-	for (start = 0; start < this->vertex.size(); ++start)
-	{
-		bool flag = false;
-		for (int i = 0; i < this->edge.size(); ++i)
-		{
-			if (this->edge[i].v2 == start) { flag = true; break; }
-		}
-		if (!flag) { break; }
-	}
-	for (end = 0; end < this->vertex.size(); ++end)
-	{
-		bool flag = false;
-		for (int i = 0; i < this->edge.size(); ++i)
-		{
-			if (this->edge[i].v1 == end) { flag = true; break; }
-		}
-		if (!flag) { break; }
-	}
-
-	/*计算入度和出度*/
-	for (int i = 0; i < this->edge.size(); ++i)
-	{
-		indegree[edge[i].v2]++;
-		outdegree[edge[i].v1]++;
-	}
-
-	if (start < this->vertex.size() && end < this->vertex.size())
-	{
-		indegree[start] = outdegree[end] = 0;
-	}
-	else
-	{
-		this->isFeasible = false;
-	}
-}
-
 bool Activity::judgeFeasible()
 {
-	/*vector<Vertex> copyV(vertex.begin(), vertex.end());
-	vector<Edge> copyE(edge.begin(), edge.end());
+	int i, j, w;
 
-	queue<Vertex> Q;
-	Q.push(start);
-	while (!Q.empty())
+	/*计算入度和出度*/
+	for (i = 0; i < this->edge.size(); ++i)
 	{
-		Vertex now = Q.front();	Q.pop();
-		int j = getFirstNeighbour(now);
-		while (j != -1)
+		j = getFirstNeighbour(i);
+		while(j != -1)
 		{
-			indegree[j]--;
-			j = getNextNeighbour(now, j);
-		}
-
-		for (auto iter = copyV.begin(); iter != copyV.end(); ++iter)
-		{
-			if (*iter == now)
-			{
-				copyV.erase(iter, iter + 1);
-				break;
-			}
-		}
-
-		for (int i = 0; i < copyV.size(); ++i)
-		{
-			if (indegree[copyV[i]] == 0)
-			{
-				Q.push(copyV[i]);
-				break;
-			}
+			indegree[j]++;
+			outdegree[i]++;
+			j = getNextNeighbour(i, j);
 		}
 	}
 
-	return true;*/
-	return this->isFeasible;
+	/*拓扑排序*/
+	int cnt = 0;
+	queue<int> Q;
+	for (int i = 0; i < vertex.size(); ++i)
+	{
+		if (indegree[i] == 0)
+		{
+			Q.push(i);
+		}
+	}
+
+	while (!Q.empty())
+	{
+		i = Q.front();	Q.pop();
+		++cnt;
+		j = getFirstNeighbour(i);
+		while (j != -1)
+		{
+			w = getWeight(i, j);
+			if (Ve[i] + w > Ve[j]) { Ve[j] = Ve[i] + w; }
+
+			if (--indegree[j] == 0)
+			{
+				Q.push(j);
+			}
+			j = getNextNeighbour(i, j);
+		}
+	}
+
+	return (cnt == this->vertex.size());
 }
 
 Vertex Activity::getFirstNeighbour(const Vertex & source)
@@ -209,7 +172,7 @@ Vertex Activity::getNextNeighbour(const Vertex & source, const Vertex & dest)
 {
 	Edge *p = NULL;
 
-	for ( p= &this->edge[0]; p < &this->edge[0] + this->edge.size(); ++p)
+	for (p = &this->edge[0]; p < &this->edge[0] + this->edge.size(); ++p)
 	{
 		if (p->v1 == source && p->v2 == dest)
 		{
@@ -221,6 +184,41 @@ Vertex Activity::getNextNeighbour(const Vertex & source, const Vertex & dest)
 		if (p->v1 == source)
 		{
 			return p->v2;
+		}
+	}
+	return -1;
+}
+
+Vertex Activity::getLastNeighbour(const Vertex & source)
+{
+	for (Edge *p = &this->edge[0]; p < &this->edge[0] + this->edge.size(); ++p)
+	{
+		if (p->v2 == source)
+		{
+			return p->v1;
+		}
+	}
+
+	return -1;
+}
+
+Vertex Activity::getBackNeighbour(const Vertex & source, const Vertex & dest)
+//用后面的结点找前面的额结点 传参数的时候应该是  j,i
+{
+	Edge *p = NULL;
+
+	for (p = &this->edge[0]; p < &this->edge[0] + this->edge.size(); ++p)
+	{
+		if (p->v2 == source && p->v1 == dest)
+		{
+			break;
+		}
+	}
+	for (++p; p < &this->edge[0] + this->edge.size(); ++p)
+	{
+		if (p->v2 == source)
+		{
+			return p->v1;
 		}
 	}
 	return -1;
@@ -239,78 +237,50 @@ int Activity::getWeight(const Vertex & v1, const Vertex & v2)
 
 void Activity::CriticialPath()
 {
-	this->calculateVe();
-	this->calculateVl();
+	cout << Ve[this->vertex.size() - 1] << endl;		//输出整个项目所需要的时间
 
-	cout << Vl[this->vertex.size() - 1] << endl;		//输出整个项目所需要的时间
-
-	vector<int> vec;
-
-	for (int i = 0; i < this->edge.size(); ++i)
-	{
-		int j = getFirstNeighbour(i);
-		while (j != -1)
-		{
-			Ae = Ve[i];
-			Al = Vl[j] - getWeight(i, j);
-
-			if (Al == Ae)
-			{
-				//cout << i + 1 << "->" << j + 1 << endl;
-				vec.push_back(j);
-			}
-			j = getNextNeighbour(i, j);
-		}
-
-		/////////////////////////////////////
-		for (int k = 0; k < vec.size(); ++k)
-		{
-			for (int row = this->edge.size()-1; row >=0; --row)
-			{
-				if (edge[row].v1 == i)
-				{
-					auto iter = find(vec.begin(), vec.end(), edge[row].v2);
-					if (iter != vec.end())
-					{
-						cout << i + 1 << "->" << *iter + 1 << endl;
-						vec.erase(iter, iter + 1);
-					}
-				}
-			}
-		}
-		/////////////////////////////////////
-	}
-}
-
-void Activity::calculateVe()
-{
+	vector<vector<int > > result(vertex.size(), vector<int>(vertex.size(), INFINITE));
 	int i, j, w;
-
+	queue<int> Q;
 	for (i = 0; i < this->vertex.size(); ++i)
 	{
-		j = getFirstNeighbour(i);
-		while (j != -1)
+		if (outdegree[i] == 0)
+		{
+			Q.push(i);
+		}
+	}
+	
+	Vl[this->vertex.size() - 1] = Ve[this->vertex.size() - 1];
+	while (!Q.empty())
+	{
+		j = Q.front();	Q.pop();
+		i = getLastNeighbour(j);
+		while (i != -1)
 		{
 			w = getWeight(i, j);
-			if (Ve[i] + w > Ve[j]) { Ve[j] = Ve[i] + w; }
-			j = getNextNeighbour(i, j);
+			if (Vl[j] - w < Vl[i]) { Vl[i] = Vl[j] - w; }
+
+			result[i][j] = Vl[j] - Ve[i] - getWeight(i, j);
+
+			if (--outdegree[i] == 0)
+			{
+				Q.push(i);
+			}
+			i = getBackNeighbour(j, i);
+
 		}
 	}
-}
 
-void Activity::calculateVl()
-{
-	int j, k, w;
-
-	Vl[this->vertex.size() - 1] = Ve[this->vertex.size() - 1];
-	for (j = this->vertex.size() - 2; j >= 0; --j)
+	/*输出结果*/
+	for (i = 0; i < this->vertex.size(); ++i)
 	{
-		k = getFirstNeighbour(j);
-		while (k != -1)
+		for (j = this->vertex.size() - 1; j >= 0; --j)
 		{
-			w = getWeight(j, k);
-			if (Vl[k] - w < Vl[j]) { Vl[j] = Vl[k] - w; }
-			k = getNextNeighbour(j, k);
+			if (result[i][j] == 0)
+			{
+				cout << i + 1 << "->" << j + 1 << endl;
+			}
 		}
 	}
 }
+
