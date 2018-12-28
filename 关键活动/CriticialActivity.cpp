@@ -237,8 +237,7 @@ int Activity::getWeight(const Vertex & v1, const Vertex & v2)
 
 void Activity::CriticialPath()
 {
-	cout << Ve[this->vertex.size() - 1] << endl;		//输出整个项目所需要的时间
-
+	cout << *max_element(Ve.begin(), Ve.end()) << endl;//输出整个项目所需要的时间
 	vector<vector<int > > result(vertex.size(), vector<int>(vertex.size(), INFINITE));
 	int i, j, w;
 	queue<int> Q;
@@ -250,7 +249,8 @@ void Activity::CriticialPath()
 		}
 	}
 	
-	Vl[this->vertex.size() - 1] = Ve[this->vertex.size() - 1];
+	Vl[max_element(Ve.begin(), Ve.end()) - Ve.begin()] = *max_element(Ve.begin(), Ve.end());
+
 	while (!Q.empty())
 	{
 		j = Q.front();	Q.pop();
