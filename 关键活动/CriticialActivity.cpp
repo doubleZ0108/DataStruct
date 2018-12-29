@@ -10,9 +10,10 @@ using namespace std;
 
 typedef int Vertex;
 struct Edge
+	//网络中的边类
 {
-	Vertex v1, v2;
-	int cost = 0;
+	Vertex v1, v2;		//边的两顶点
+	int cost = 0;		//边的长度
 
 	friend istream& operator>>(istream &is, const Edge &buf);
 };
@@ -20,29 +21,33 @@ struct Edge
 class Activity
 {
 private:
-	vector<Vertex> vertex;
-	vector<Edge> edge;
+	vector<Vertex> vertex;				//顶点集合
+	vector<Edge> edge;					//网络中的边集合
 
-	vector<int> Ve, Vl;
-	int Ae, Al;
+	vector<int> Ve, Vl;					//事件最早和最迟开始时间
+	int Ae, Al;							//活动最早和最迟开始时间
 
-	vector<int> indegree, outdegree;
+	vector<int> indegree, outdegree;	//结点的入度和出度
+
+	vector<vector<int > > result;		//储存结果集合
 public:
 	Activity() = default;
 	Activity(int VertexNum, int EdgeNum);
 
-	void InitVertexs();
-	void InitEdges();
-
 	bool judgeFeasible();				//判断任务调度是否可行
 
-	Vertex getFirstNeighbour(const Vertex &source);
-	Vertex getNextNeighbour(const Vertex &source, const Vertex &dest);
-	Vertex getLastNeighbour(const Vertex &source);
-	Vertex getBackNeighbour(const Vertex &source, const Vertex &dest);
-	int getWeight(const Vertex &v1, const Vertex &v2);
+	void findCriticialPath();			//求关键路径的算法
+	void showCriticialPath();			//输出关键路径
 
-	void CriticialPath();
+private:
+	void InitVertexs();					//读入网络中的顶点
+	void InitEdges();					//读入网络中的边
+
+	Vertex getFirstNeighbour(const Vertex &source);							//取source的第一个邻居
+	Vertex getNextNeighbour(const Vertex &source, const Vertex &dest);		//取source的下一个邻居(不为dest)
+	Vertex getLastNeighbour(const Vertex &source);							//取source的最后一个邻居
+	Vertex getBackNeighbour(const Vertex &source, const Vertex &dest);		//取source的前一个邻居(不为dest)
+	int getWeight(const Vertex &v1, const Vertex &v2);						//获取某条边的长度
 };
 
 int main(void)
@@ -54,12 +59,14 @@ int main(void)
 	Activity act(VertexNum, EdgeNum);
 
 	if (!act.judgeFeasible())
+		//判断调度任务是否可行
 	{
 		cout << 0 << endl;
 	}
 	else
 	{
-		act.CriticialPath();
+		act.findCriticialPath();			//寻找关键路径
+		act.showCriticialPath();			//输出关键路径
 	}
 
 	system("pause");
@@ -74,16 +81,23 @@ istream& operator>>(istream &is, Edge &buf)
 
 Activity::Activity(int VertexNum, int EdgeNum)
 {
+	/*读入顶点集合*/
 	vertex.resize(VertexNum);
 	InitVertexs();
+	/*读入边集合*/
 	edge.resize(EdgeNum);
 	InitEdges();
 
+	/*初始化入度和出度*/
 	indegree.resize(VertexNum,0);
 	outdegree.resize(VertexNum, 0);
 
+	/*初始化最早和最迟开始时间*/
 	Ve.resize(VertexNum, 0);
 	Vl.resize(VertexNum, INFINITE);			//因为最迟时间是取最小的, 所以要初始化为无穷大
+
+	/*初始化结果集合*/
+	result.resize(vertex.size(), vector<int>(vertex.size(), INFINITE));
 }
 
 void Activity::InitVertexs()
@@ -127,6 +141,7 @@ bool Activity::judgeFeasible()
 	int cnt = 0;
 	queue<int> Q;
 	for (int i = 0; i < vertex.size(); ++i)
+		//先将所有入度为0的顶点压入队列
 	{
 		if (indegree[i] == 0)
 		{
@@ -140,11 +155,12 @@ bool Activity::judgeFeasible()
 		++cnt;
 		j = getFirstNeighbour(i);
 		while (j != -1)
+			//如果该顶点往后还有边的话
 		{
 			w = getWeight(i, j);
-			if (Ve[i] + w > Ve[j]) { Ve[j] = Ve[i] + w; }
+			if (Ve[i] + w > Ve[j]) { Ve[j] = Ve[i] + w; }	//正拓扑序列计算最早开始时间
 
-			if (--indegree[j] == 0)
+			if (--indegree[j] == 0)		//将度数为0的顶点压入队列
 			{
 				Q.push(j);
 			}
@@ -152,7 +168,8 @@ bool Activity::judgeFeasible()
 		}
 	}
 
-	return (cnt == this->vertex.size());
+	return (cnt == this->vertex.size());	
+		//如果所有顶点都被拓扑排序遍历过则该调度可行
 }
 
 Vertex Activity::getFirstNeighbour(const Vertex & source)
@@ -173,6 +190,7 @@ Vertex Activity::getNextNeighbour(const Vertex & source, const Vertex & dest)
 	Edge *p = NULL;
 
 	for (p = &this->edge[0]; p < &this->edge[0] + this->edge.size(); ++p)
+		//越过当前已经找过的邻居
 	{
 		if (p->v1 == source && p->v2 == dest)
 		{
@@ -235,13 +253,14 @@ int Activity::getWeight(const Vertex & v1, const Vertex & v2)
 	}
 }
 
-void Activity::CriticialPath()
+void Activity::findCriticialPath()
 {
-	cout << *max_element(Ve.begin(), Ve.end()) << endl;//输出整个项目所需要的时间
-	vector<vector<int > > result(vertex.size(), vector<int>(vertex.size(), INFINITE));
+	cout << *max_element(Ve.begin(), Ve.end()) << endl;		//输出整个项目所需要的时间
+
 	int i, j, w;
 	queue<int> Q;
 	for (i = 0; i < this->vertex.size(); ++i)
+		//将所有出度为0的顶点压入队列
 	{
 		if (outdegree[i] == 0)
 		{
@@ -250,6 +269,7 @@ void Activity::CriticialPath()
 	}
 	
 	Vl[max_element(Ve.begin(), Ve.end()) - Ve.begin()] = *max_element(Ve.begin(), Ve.end());
+			//最后的活动的最迟开始时间等于最早开始时间
 
 	while (!Q.empty())
 	{
@@ -258,11 +278,12 @@ void Activity::CriticialPath()
 		while (i != -1)
 		{
 			w = getWeight(i, j);
-			if (Vl[j] - w < Vl[i]) { Vl[i] = Vl[j] - w; }
+			if (Vl[j] - w < Vl[i]) { Vl[i] = Vl[j] - w; }		//逆拓扑排序顺序计算事件的最迟开始时间
 
-			result[i][j] = Vl[j] - Ve[i] - getWeight(i, j);
+			result[i][j] = Vl[j] - Ve[i] - getWeight(i, j);		//时间余量等于三者之差
 
 			if (--outdegree[i] == 0)
+				//将出度为0的顶点压入队列中
 			{
 				Q.push(i);
 			}
@@ -270,11 +291,15 @@ void Activity::CriticialPath()
 
 		}
 	}
+}
 
+void Activity::showCriticialPath()
+{
 	/*输出结果*/
-	for (i = 0; i < this->vertex.size(); ++i)
+	for (int i = 0; i < this->vertex.size(); ++i)
 	{
-		for (j = this->vertex.size() - 1; j >= 0; --j)
+		for (int j = this->vertex.size() - 1; j >= 0; --j)
+			//按要求第一个顶点相同时，逆读入顺序输出
 		{
 			if (result[i][j] == 0)
 			{
@@ -283,4 +308,3 @@ void Activity::CriticialPath()
 		}
 	}
 }
-
