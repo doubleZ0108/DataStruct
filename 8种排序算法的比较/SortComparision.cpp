@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <queue>
 #include <cstdlib>
 #include <ctime>
 #include <string>
@@ -7,6 +8,8 @@
 #include <climits>
 #include <algorithm>
 using namespace std;
+
+#define RADIX 10
 
 class Time_Swap
 	//封装计算排序时间和排序交换次数
@@ -190,7 +193,6 @@ void ShellSort(vector<int> sequence)
 
 	record.showTime();
 	record.showExchange();
-	showSequence(sequence);
 }
 /*快速排序*/
 int Partition(vector<int> &sequence, int low, int high, Time_Swap &record)
@@ -247,7 +249,6 @@ void QuickSort(vector<int> sequence)
 
 	record.showTime();
 	record.showExchange();
-	showSequence(sequence);
 }
 /*堆排序*/
 void FilterDown(vector<int> &heap, int i, const int EndOfHeap, Time_Swap &record)
@@ -378,6 +379,83 @@ void MergeSort(vector<int> sequence)
 	record.showExchange();
 }
 
+/*基数排序*/
+void distribute(vector<int> &sequence,vector<queue<int> > &alphabet, 
+	int now, Time_Swap &record)
+//按照对应的位, 加入对应的队列中
+{
+	int temp;
+	for (int i = 0; i < sequence.size(); ++i)
+	{
+		switch (now)
+		{
+		case 1:
+			//第一位(个位)
+		{
+			alphabet[sequence[i] % 10].push(sequence[i]);
+			record.growExchange(1);
+
+			break;
+		}
+		case 2:
+			//第二位(十位)
+		{
+			temp = sequence[i];
+			alphabet[(temp / 10) % 10].push(sequence[i]);
+			record.growExchange(1);
+
+			break;
+		}
+		case 3:
+			//第三位(百位)
+		{
+			temp = sequence[i];
+			alphabet[temp / 100].push(sequence[i]);
+			record.growExchange(1);
+
+			break;
+		}
+		default:cerr << "now error!" << endl; exit(-1);
+			break;
+		}
+	}
+}
+void collect(vector<int> &sequence, vector<queue<int> > &alphabet, Time_Swap &record)
+{
+	int cnt = 0;
+	for (int i = 0; i < RADIX; ++i)
+		//收集基数多个队列的信息
+	{
+		while (!alphabet[i].empty())
+			//当当前队列不空时, 反复将队列元素加入到序列中
+		{
+			sequence[cnt] = alphabet[i].front();
+			record.growExchange(1);
+
+			++cnt;
+			alphabet[i].pop();
+		}
+	}
+}
+void RadixSort(vector<int> sequence)
+{
+	Time_Swap record("基数排序");
+
+	vector<queue<int> > alphabet(RADIX);
+
+	record.Start();
+	//////////////////////////////////////////////////////////////////////////
+	for (int i = 1; i<= 3; ++i)
+	{
+		distribute(sequence,alphabet, i, record);			//分发
+		collect(sequence, alphabet, record);				//收集
+	}
+	//////////////////////////////////////////////////////////////////////////
+	record.End();
+
+	record.showTime();
+	record.showExchange();
+}
 
 int main(void)
 {
@@ -453,6 +531,8 @@ int main(void)
 			}
 			case 8:
 			{
+				growSequence(sequence, true);
+				RadixSort(sequence);
 				break;
 			}
 			default:cerr << "操作码非法!请重新输入!" << endl;
