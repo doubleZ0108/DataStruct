@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <string>
+#include <cmath>
 #include <climits>
 #include <algorithm>
 using namespace std;
@@ -94,7 +95,7 @@ void BubbleSort(vector<int> sequence)
 /*—°‘Ò≈≈–Ú*/
 void SelectSort(vector<int> sequence)
 {
-	Time_Swap record("√∞≈›≈≈–Ú");
+	Time_Swap record("—°‘Ò≈≈–Ú");
 
 	int minindex;
 
@@ -103,11 +104,14 @@ void SelectSort(vector<int> sequence)
 	for (int i = 0; i < sequence.size() - 1; ++i)
 	{
 		minindex = i;
+		record.growExchange(1);
+
 		for (int j = i + 1; j < sequence.size(); ++j)
 		{
 			if (sequence[j] < sequence[minindex])
 			{
 				minindex = j;
+				record.growExchange(1);
 			}
 		}
 
@@ -145,6 +149,41 @@ void InsertSort(vector<int> sequence)
 
 		sequence[j+1] = temp;
 		record.growExchange(1); 
+	}
+	//////////////////////////////////////////////////////////////////////////
+	record.End();
+
+	record.showTime();
+	record.showExchange();
+}
+/*œ£∂˚≈≈–Ú*/
+void ShellSort(vector<int> sequence)
+{
+	Time_Swap record("÷±Ω”≤Â»Î≈≈–Ú");
+
+	int i, j, k,gap, temp;
+
+	record.Start();
+	//////////////////////////////////////////////////////////////////////////
+	for (gap = sequence.size() / 2; gap >= 1; gap = (gap == 2 ? 1 : floor(gap / 2.2)))
+	{
+		for (k = 0; k < gap; ++k)
+		{
+			for (i = k + gap; i < sequence.size(); i += gap)
+			{
+				temp = sequence[i];
+				record.growExchange(1);
+
+				for (j = i - gap; j >= 0 && sequence[j] > temp; j -= gap)
+				{
+					sequence[j + gap] = sequence[j];
+					record.growExchange(1);
+				}
+
+				sequence[j + gap] = temp;
+				record.growExchange(1);
+			}
+		}
 	}
 	//////////////////////////////////////////////////////////////////////////
 	record.End();
@@ -207,6 +246,7 @@ int main(void)
 			}
 			case 4:
 			{
+				ShellSort(sequence);
 				break;
 			}
 			case 5:
