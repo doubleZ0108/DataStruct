@@ -192,7 +192,63 @@ void ShellSort(vector<int> sequence)
 	record.showExchange();
 	showSequence(sequence);
 }
+/*快速排序*/
+int Partition(vector<int> &sequence, int low, int high, Time_Swap &record)
+{
+	/*选定基准为首元素*/
+	int pivotpos = low;
+	int pivot = sequence[low];
+	record.growExchange(1);
 
+	for (int i = low + 1; i <= high; ++i)
+	{
+		if (sequence[i] < pivot && ++pivotpos != i)
+			//如果第一个条件满足则意味着这个元素应当被丢到基准前面
+			//换句话说, 基准要往后移一个位置, 腾出一个位置给这个更小的元素
+			//所以++pivotpos
+		{
+			swap(sequence[i], sequence[pivotpos]);
+			//现在的pivotpos位置是一个比基准大的元素, 反正它比基准大, 直接换到后面也无妨
+			//反正一会还要递归调快排 (个人认为这是快排的进化所在
+			record.growExchange(3);
+		}
+	}
+
+	/*最后把基准从原来的low位置搬到应该到的位置pivotpos*/
+	swap(sequence[low], sequence[pivotpos]);
+	record.growExchange(3);
+
+	/*返回把原序列分为两部分的位置*/
+	return pivotpos;
+}
+void QuickSort(vector<int> &sequence, int left, int right, Time_Swap &record)
+{
+	if (left < right)
+	{
+		/*以pivotpos为中心, 把序列划分成两个部分*/
+		int pivotpos = Partition(sequence, left, right, record);
+
+		/*分别对左右部分递归快排*/
+		QuickSort(sequence, left, pivotpos - 1, record);
+		QuickSort(sequence, pivotpos + 1, right, record);
+	}
+}
+void QuickSort(vector<int> sequence)
+{
+	Time_Swap record("快速排序");
+
+	int i, j, temp;
+
+	record.Start();
+	//////////////////////////////////////////////////////////////////////////
+	QuickSort(sequence, 0, sequence.size() - 1, record);
+	//////////////////////////////////////////////////////////////////////////
+	record.End();
+
+	record.showTime();
+	record.showExchange();
+	showSequence(sequence);
+}
 
 int main(void)
 {
