@@ -16,7 +16,7 @@ struct Edge
 	friend istream& operator>>(istream &is, const Edge &buf);
 };
 
-class Activity
+class Activity_m
 {
 private:
 	vector<vector<Vertex> > NetWork;			//用邻接矩阵存储网络的顶点和边
@@ -29,21 +29,22 @@ private:
 	int idx;
 
 public:
-	Activity() = default;
-	Activity(int VertexNum, int EdgeNum);
+	Activity_m() = default;
+	Activity_m(int VertexNum, int EdgeNum);
 	void Init(int EdgeNum);
 
 	bool TopoSort();					//正向拓扑排序用于检测调度是否可行 & 计算最早开始时间
 	void findCriticialPath();			//逆向拓扑排序计算最迟开始时间 & 时间余量
 	void showCriticialPath();
 };
+
 int main(void)
 {
 	int VertexNum, EdgeNum;
 	cin >> VertexNum >> EdgeNum;
 	////////////////////////读入错误检测
 
-	Activity act(VertexNum, EdgeNum);
+	Activity_m act(VertexNum, EdgeNum);
 
 	if (!act.TopoSort())
 	{
@@ -65,7 +66,7 @@ istream& operator>>(istream &is, Edge &buf)
 	return is;
 }
 
-Activity::Activity(int VertexNum, int EdgeNum)
+Activity_m::Activity_m(int VertexNum, int EdgeNum)
 {
 	/*初始化邻接矩阵*/
 	NetWork.resize(VertexNum, vector<Vertex>(VertexNum, INFINITE));
@@ -85,7 +86,7 @@ Activity::Activity(int VertexNum, int EdgeNum)
 	Init(EdgeNum);
 }
 
-void Activity::Init(int EdgeNum)
+void Activity_m::Init(int EdgeNum)
 {
 	Edge buf;
 	for (int i = 0; i < EdgeNum; ++i)
@@ -108,7 +109,7 @@ void Activity::Init(int EdgeNum)
 	}
 }
 
-bool Activity::TopoSort()
+bool Activity_m::TopoSort()
 {
 	int i, j, V, cnt = 0;
 	
@@ -155,7 +156,7 @@ bool Activity::TopoSort()
 			//如果所有顶点都被拓扑排序遍历过则该调度可行
 }
 
-void Activity::findCriticialPath()
+void Activity_m::findCriticialPath()
 {
 	int i, j, V;
 
@@ -196,7 +197,7 @@ void Activity::findCriticialPath()
 	}
 }
 
-void Activity::showCriticialPath()
+void Activity_m::showCriticialPath()
 {
 	cout << ECT << endl;			//输出整个项目所需的最少完成时间
 
