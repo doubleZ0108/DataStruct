@@ -307,6 +307,77 @@ void HeapSort(vector<int> sequence)
 	record.showTime();
 	record.showExchange();
 }
+/*归并排序*/
+void MergeList(vector<int> &sequence, int first, int mid, int last, 
+	int tempList[], Time_Swap &record)
+{
+	int i = first, j = mid + 1;
+	int m = mid, n = last;
+	int k = 0;
+
+	//将两个指针分别指向两个序列的起始位置
+	while (i <= m && j <= n)
+	{
+		if (sequence[i] <= sequence[j])
+		{
+			tempList[k++] = sequence[i++];
+			record.growExchange(1);
+		}
+		else
+		{
+			tempList[k++] = sequence[j++];
+			record.growExchange(1);
+		}
+	}
+
+	//将第一条链的剩余部分链到后面
+	while (i <= m)
+	{
+		tempList[k++] = sequence[i++];
+		record.growExchange(1);
+	}
+	//将第二条链的剩余部分链到后面
+	while (j <= n)
+	{
+		tempList[k++] = sequence[j++];
+		record.growExchange(1);
+	}
+
+	for (i = 0; i < k; i++)
+	{
+		sequence[first + i] = tempList[i];
+		record.growExchange(1);
+	}
+}
+void Mergesort(vector<int> &sequence, int first, int last, 
+	int tempList[], Time_Swap &record)
+{
+	if (first < last)
+	{
+		int mid = (first + last) / 2;
+		Mergesort(sequence, first, mid, tempList, record);			//对左半部分递归调用归并排序
+		Mergesort(sequence, mid + 1, last, tempList, record);		//对右半部分递归调用归并排序
+		MergeList(sequence, first, mid, last, tempList, record);	//最后将两部分合并
+	}
+}
+void MergeSort(vector<int> sequence)
+{
+	Time_Swap record("归并排序");
+
+	int *tempList = new int[sequence.size()];
+
+	record.Start();
+	//////////////////////////////////////////////////////////////////////////
+	Mergesort(sequence, 0, sequence.size() - 1, tempList, record);
+	//////////////////////////////////////////////////////////////////////////
+	record.End();
+
+	delete[]tempList;
+
+	record.showTime();
+	record.showExchange();
+}
+
 
 int main(void)
 {
@@ -377,6 +448,7 @@ int main(void)
 			}
 			case 7:
 			{
+				MergeSort(sequence);
 				break;
 			}
 			case 8:
