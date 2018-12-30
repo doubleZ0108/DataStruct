@@ -80,7 +80,7 @@ void BubbleSort(vector<int> sequence)
 			if (sequence[j] > sequence[j + 1])
 			{
 				swap(sequence[j], sequence[j + 1]);
-				record.growExchange(3);				//每次调用swqp执行三次交换
+				record.growExchange(3);				//每次调用swap执行三次交换
 				exchange = true;
 			}
 		}
@@ -116,6 +116,35 @@ void SelectSort(vector<int> sequence)
 			swap(sequence[i], sequence[minindex]);
 			record.growExchange(3);
 		}
+	}
+	//////////////////////////////////////////////////////////////////////////
+	record.End();
+
+	record.showTime();
+	record.showExchange();
+}
+/*直接插入排序*/
+void InsertSort(vector<int> sequence)
+{
+	Time_Swap record("直接插入排序");
+
+	int i, j, temp;
+
+	record.Start();
+	//////////////////////////////////////////////////////////////////////////
+	for (i = 1; i < sequence.size(); ++i)
+	{
+		temp = sequence[i];
+		record.growExchange(1);
+
+		for (j = i - 1; j >= 0 && sequence[j] > temp; --j)
+		{
+			sequence[j + 1] = sequence[j];
+			record.growExchange(1);
+		}
+
+		sequence[j+1] = temp;
+		record.growExchange(1); 
 	}
 	//////////////////////////////////////////////////////////////////////////
 	record.End();
@@ -173,6 +202,7 @@ int main(void)
 			}
 			case 3:
 			{
+				InsertSort(sequence);
 				break;
 			}
 			case 4:
