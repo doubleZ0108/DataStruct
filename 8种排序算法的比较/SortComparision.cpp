@@ -249,6 +249,64 @@ void QuickSort(vector<int> sequence)
 	record.showExchange();
 	showSequence(sequence);
 }
+/*堆排序*/
+void FilterDown(vector<int> &heap, int i, const int EndOfHeap, Time_Swap &record)
+{
+	int current = i;
+	int child = 2 * i + 1;
+	int temp = heap[i];
+	record.growExchange(1);
+
+	while (child <= EndOfHeap)
+	{
+		if(child+1<EndOfHeap &&
+			(heap[child]<heap[child+1]))
+			//如果右孩子大则切换到右孩子
+		{
+			child = child + 1;
+		}
+		if (temp >= heap[child]) { break; }
+		else
+		{
+			heap[current] = heap[child];
+			record.growExchange(1);
+
+			current = child;		//切换到下一层
+			child = 2 * child + 1;
+		}
+	}
+
+	heap[current] = temp;
+	record.growExchange(1);
+}
+void HeapSort(vector<int> sequence)
+{
+	Time_Swap record("堆排序");
+
+	int i, j;
+
+	record.Start();
+	//////////////////////////////////////////////////////////////////////////
+	/*形成初始最大堆*/
+	for (i = (sequence.size() - 2) / 2; i >= 0; --i)
+		//从最后一个非叶子结点开始逐步调成正最大堆
+	{
+		FilterDown(sequence, i, sequence.size() - 1, record);
+	}
+
+	for (i = sequence.size() - 1; i >= 1; --i)
+	{
+		swap(sequence[0], sequence[i]);		//交换堆顶和堆底元素
+		record.growExchange(3);
+
+		FilterDown(sequence, 0, i - 1, record);	//重建最大堆
+	}
+	//////////////////////////////////////////////////////////////////////////
+	record.End();
+
+	record.showTime();
+	record.showExchange();
+}
 
 int main(void)
 {
@@ -314,6 +372,7 @@ int main(void)
 			}
 			case 6:
 			{
+				HeapSort(sequence);
 				break;
 			}
 			case 7:
