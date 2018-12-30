@@ -40,6 +40,7 @@ public:
 	void showCriticialPath();			//输出关键路径
 
 private:
+	bool islegal(const Edge &buf);	//判断读入的边是否合法
 	void InitVertexs();					//读入网络中的顶点
 	void InitEdges();					//读入网络中的边
 
@@ -53,15 +54,26 @@ private:
 int main(void)
 {
 	int VertexNum, EdgeNum;
-	cin >> VertexNum >> EdgeNum;
-	////////////////////////读入错误检测
+	while (true)
+	{
+		cout << "请输入任务交接点数及子任务数量：";
+		cin >> VertexNum >> EdgeNum;
+		if (VertexNum > 0 && EdgeNum > 0)
+		{
+			break;
+		}
+		else
+		{
+			cerr << "任务交接点数和子任务数量必须非负，请重新输入" << endl;
+		}
+	}
 
 	Activity act(VertexNum, EdgeNum);
 
 	if (!act.judgeFeasible())
 		//判断调度任务是否可行
 	{
-		cout << 0 << endl;
+		cout << endl << 0 << endl;
 	}
 	else
 	{
@@ -100,6 +112,12 @@ Activity::Activity(int VertexNum, int EdgeNum)
 	result.resize(vertex.size(), vector<int>(vertex.size(), INFINITE));
 }
 
+bool Activity::islegal(const Edge & buf)
+{
+	return (find(this->vertex.begin(), vertex.end(), buf.v1 - 1) != this->vertex.end()
+		&& find(this->vertex.begin(), this->vertex.end(), buf.v2 - 1) != this->vertex.end());
+}
+
 void Activity::InitVertexs()
 {
 	for (int i = 0; i < this->vertex.size(); ++i)
@@ -110,11 +128,20 @@ void Activity::InitVertexs()
 
 void Activity::InitEdges()
 {
-	/////////////////////////////边读入检测
+	cout << endl << "请分别输入" << this->edge.size() << "个子任务的开始和完成的交接点编号以及完成该任务所需要的时间" << endl;
+
 	Edge buf;
 	for (int i = 0; i < edge.size(); ++i)
 	{
 		cin >> buf;
+		if (!islegal(buf))
+			//读入边时的检测
+		{
+			cerr << "子任务的开始和完成的交接点编号必须是任务交接点标号，请重新输入" << endl;
+			--i;
+			continue;
+		}
+
 		this->edge[i].v1 = buf.v1 - 1;
 		this->edge[i].v2 = buf.v2 - 1;
 		this->edge[i].cost = buf.cost;
@@ -255,8 +282,6 @@ int Activity::getWeight(const Vertex & v1, const Vertex & v2)
 
 void Activity::findCriticialPath()
 {
-	cout << *max_element(Ve.begin(), Ve.end()) << endl;		//输出整个项目所需要的时间
-
 	int i, j, w;
 	queue<int> Q;
 	for (i = 0; i < this->vertex.size(); ++i)
@@ -296,6 +321,8 @@ void Activity::findCriticialPath()
 void Activity::showCriticialPath()
 {
 	/*输出结果*/
+	cout << endl << *max_element(Ve.begin(), Ve.end()) << endl;		//输出整个项目所需要的时间
+
 	for (int i = 0; i < this->vertex.size(); ++i)
 	{
 		for (int j = this->vertex.size() - 1; j >= 0; --j)
