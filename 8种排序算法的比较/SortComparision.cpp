@@ -157,40 +157,42 @@ void InsertSort(vector<int> sequence)
 	record.showExchange();
 }
 /*Ï£¶ûÅÅÐò*/
+void ShellInsert(vector<int> &sequence, int gap, Time_Swap &record)
+{
+	int i, j, k, temp;
+	for (i = gap; i < sequence.size(); ++i)
+	{
+		temp = sequence[i];
+		record.growExchange(1);
+
+		for (j = i; j >= gap && temp < sequence[j - gap]; j -= gap)
+		{
+			sequence[j] = sequence[j - gap];
+			record.growExchange(1);
+		}
+
+		sequence[j] = temp;
+		record.growExchange(1);
+	}
+}
 void ShellSort(vector<int> sequence)
 {
-	Time_Swap record("Ö±½Ó²åÈëÅÅÐò");
-
-	int i, j, k,gap, temp;
+	Time_Swap record("Ï£¶ûÅÅÐò");
 
 	record.Start();
 	//////////////////////////////////////////////////////////////////////////
-	for (gap = sequence.size() / 2; gap >= 1; gap = (gap == 2 ? 1 : floor(gap / 2.2)))
+	for (int gap = sequence.size() / 2; gap >= 1; gap = (gap == 2 ? 1 : gap / 2.2))
 	{
-		for (k = 0; k < gap; ++k)
-		{
-			for (i = k + gap; i < sequence.size(); i += gap)
-			{
-				temp = sequence[i];
-				record.growExchange(1);
-
-				for (j = i - gap; j >= 0 && sequence[j] > temp; j -= gap)
-				{
-					sequence[j + gap] = sequence[j];
-					record.growExchange(1);
-				}
-
-				sequence[j + gap] = temp;
-				record.growExchange(1);
-			}
-		}
+		ShellInsert(sequence, gap, record);
 	}
 	//////////////////////////////////////////////////////////////////////////
 	record.End();
 
 	record.showTime();
 	record.showExchange();
+	showSequence(sequence);
 }
+
 
 int main(void)
 {
@@ -251,6 +253,7 @@ int main(void)
 			}
 			case 5:
 			{
+				QuickSort(sequence);
 				break;
 			}
 			case 6:
