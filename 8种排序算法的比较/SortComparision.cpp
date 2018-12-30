@@ -18,7 +18,7 @@ private:
 	string name;			//排序算法的名称
 
 	int start, end;			//开始时间和结束时间
-	double duration;		//时间差
+	double duration;		    //时间差
 
 	int cntExchange = 0;	//交换次数
 public:
@@ -27,10 +27,10 @@ public:
 
 	void Start() { start = clock(); }
 	void End() { end = clock(); }
-	void calTime() {duration = (static_cast<double>(end - start) / CLK_TCK);}
+	void calTime() {duration = ((double)(end - start)/CLK_TCK );}
 	void growExchange(int num) { cntExchange+=num; }
 
-	void showTime() { cout << name << "所用时间: " << duration << endl; }
+	void showTime() { this->calTime();  cout << name << "所用时间: " << duration << endl; }
 	void showExchange() { cout << name << "交换次数: " << cntExchange << endl; }
 };
 
@@ -379,7 +379,7 @@ void MergeSort(vector<int> sequence)
 	record.showExchange();
 }
 
-/*基数排序*/
+/*基数排序*/			//注：基数排序是对三位数序列排序
 void distribute(vector<int> &sequence,vector<queue<int> > &alphabet, 
 	int now, Time_Swap &record)
 //按照对应的位, 加入对应的队列中
@@ -452,7 +452,7 @@ void RadixSort(vector<int> sequence)
 	}
 	//////////////////////////////////////////////////////////////////////////
 	record.End();
-
+	
 	record.showTime();
 	record.showExchange();
 }
