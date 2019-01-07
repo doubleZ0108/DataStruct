@@ -19,6 +19,8 @@
 #include <algorithm>
 using namespace std;
 
+#define MaxSize 100000
+
 struct Node
 {
 	int row;
@@ -57,14 +59,33 @@ int main(void)
 	SparseMatrix Smatrix(size);
 	vector<Node> result;
 
-	result.clear();
-	Smatrix.Transpose(result);
-	cout << endl << "普通转置算法：" << endl;
+	int start, end;
+	double duration;
+
+	start = clock();
+	for (int i = 0; i < MaxSize; ++i)
+	{
+		result.clear();
+		Smatrix.Transpose(result);
+	}
+	end = clock();
+	duration = (static_cast<double>(end - start)) / CLK_TCK;
+	cout << endl << MaxSize << "次的普通转置时间为：" << duration << endl;
+
+	cout << "普通转置算法：" << endl;
 	for_each(result.begin(), result.end(), [](const Node &buf) {cout << buf << endl; });
 
-	result.clear();
-	Smatrix.fastTranspose(result);
-	cout << endl << "快速转置算法：" << endl;
+	start = clock();
+	for (int i = 0; i < MaxSize; ++i)
+	{
+		result.clear();
+		Smatrix.fastTranspose(result);
+	}
+	end = clock();
+	duration = (static_cast<double>(end - start)) / CLK_TCK;
+	cout << endl << MaxSize << "次的快速转置时间为：" << duration << endl;
+
+	cout << "快速转置算法：" << endl;
 	for_each(result.begin(), result.end(), [](const Node &buf) {cout << buf << endl; });
 
 	system("pause");
