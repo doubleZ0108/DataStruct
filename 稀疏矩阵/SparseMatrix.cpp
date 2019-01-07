@@ -15,6 +15,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <vector>
+#include <ctime>
 #include <algorithm>
 using namespace std;
 
@@ -54,15 +55,17 @@ int main(void)
 	cin >> size;
 
 	SparseMatrix Smatrix(size);
-
 	vector<Node> result;
+
+	result.clear();
 	Smatrix.Transpose(result);
-	cout << endl << "普通转置算法：";
+	cout << endl << "普通转置算法：" << endl;
 	for_each(result.begin(), result.end(), [](const Node &buf) {cout << buf << endl; });
 
 	result.clear();
-
-
+	Smatrix.fastTranspose(result);
+	cout << endl << "快速转置算法：" << endl;
+	for_each(result.begin(), result.end(), [](const Node &buf) {cout << buf << endl; });
 
 	system("pause");
 	return 0;
@@ -128,6 +131,23 @@ void SparseMatrix::fastTranspose(vector<Node>& result)
 {
 	result.resize(size);
 
+	vector<int> rowSize(size, 0);
+	vector<int> rowStart(size, 0);
+
+	for (int i = 0; i < size; ++i)
+	{
+		rowSize[Matrix[i].col]++;
+	}
+	for (int i = 1; i < size; ++i)
+	{
+		rowStart[i] = rowStart[i - 1] + rowSize[i - 1];
+	}
+
+	for (int i = 0; i < size; ++i)
+	{
+		result[rowStart[Matrix[i].col]] = Matrix[i].tran();
+		rowStart[Matrix[i].col]++;
+	}
 }
 
 
