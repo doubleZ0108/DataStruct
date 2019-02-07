@@ -1,0 +1,93 @@
+/*
+  Q: 在二分查找中，我们是取mid等于left和right的中间值，即用等分的方法进行查找。
+  那为什么一定要等分呐？能不能进行“黄金分割”？也就是mid=left+0.618(right-left),当然mid要取整数。
+  如果这样查找，时间复杂性是多少？也许你还可以编程做个试验，比较一下二分法和“黄金分割”法的执行效率。
+  
+  结论:
+  我们以二分查找为例，我们每一次查找，就会把查找的范围缩小到0.5*0.5+0.5*0.5=0.5；
+  我们以黄金分割为例我们每查找一次，查找返回就缩小到0.618*0.618+0.382*0.382=0.528，所以二分查找缩小范围更大。
+  我们推广到一般情况，假如我们把查找范围设为1，我们按照另一种比例m：n来查找（m+n=1），那么每次查找范围缩小到d = m^2+n^2，
+  由均值不等式可知，d的最小值在m=n时取到，即d=0.5。所以二分查找比任何比例的查找效率更高。
+*/
+
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define NOTFOUND -1
+#define MAXSIZE 1000
+#define TIMES 10000
+int Normal_BinarySearch(int arr[], int size, int key)
+{
+	int low = 0, high = size - 1;
+	int mid;
+
+	while (low <= high)
+	{
+		mid = (low + high) / 2;
+		if (arr[mid] > key) { high = mid - 1; }
+		else if (arr[mid] < key) { low = mid + 1; }
+		else { return mid; }
+	}
+
+	return NOTFOUND;
+}
+int GoldenSection_BinarySearch(int arr[], int size, int key)
+{
+	int low = 0, high = size - 1;
+	int mid;
+
+	while (low <= high)
+	{
+		mid = low + 0.618*(high - low);
+		if (arr[mid] > key) { high = mid - 1; }
+		else if (arr[mid] < key) { low = mid + 1; }
+		else { return mid; }
+	}
+
+	return NOTFOUND;
+}
+
+int main(void)
+{
+	srand(time(NULL));
+
+	int arr[MAXSIZE] = { 0 };
+	for (int i = 1; i < MAXSIZE; ++i) { arr[i] = arr[i - 1] + rand() % 10; }
+
+	int start, end;
+	double duration;
+
+	start = clock();
+	for (int times = 0; times < TIMES; ++times)
+	{
+
+		for (int i = 0; i < MAXSIZE; ++i)
+		{
+			Normal_BinarySearch(arr, MAXSIZE, arr[i]);
+		}
+
+	}
+	end = clock();
+	duration = (end - start) / CLK_TCK;
+	printf("Normal_BinarySearch: %d\n", end-start);
+
+	start = clock();
+	for (int times = 0; times < TIMES; ++times)
+	{
+
+		for (int i = 0; i < MAXSIZE; ++i)
+		{
+			GoldenSection_BinarySearch(arr, MAXSIZE, arr[i]);
+		}
+
+		
+	}
+	end = clock();
+	duration = (end - start) / CLK_TCK;
+	printf("GoldenSection_BinarySearch: %d\n", end-start);
+
+	system("pause");
+	return 0;
+}
