@@ -11,7 +11,8 @@ struct TNode{
 };
 
 BinTree CreatBinTree(); /* 实现细节忽略 */
-int GetHeight( BinTree BT );
+int GetHeight( BinTree BT );    /*求二叉树的高度*/
+void PreorderPrintLeaves( BinTree BT )  /*先序输出叶结点*/
 
 int main()
 {
@@ -30,5 +31,14 @@ int GetHeight( BinTree BT )
     
     return 1 + (leftheight>rightheight? leftheight:rightheight);
   }
-  
+}
+
+void PreorderPrintLeaves( BinTree BT )
+{
+  if(BT)
+  {
+    if(!BT->Right && !BT->Left) {printf (" %c",BT->Data);}
+    PreorderPrintLeaves(BT->Left);
+    PreorderPrintLeaves(BT->Right);
+  }
 }
