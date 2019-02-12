@@ -50,3 +50,46 @@ Position FindMax(BinTree BST)
 
 	return BST;
 }
+
+
+Position Delete(BinTree BST, ElementType X)
+{
+	Position temp;
+	if (!BST)	//没找到X
+	{
+		return NULL;
+	}
+	else if (BST->data > X)		//跟Insert理解一样, 在左子树中删除并将返回值赋给该结点的左孩子
+	{
+		BST->leftChild = Delete(BST->leftChild, X);
+	}
+	else if (BST->data < X)
+	{
+		BST->rightChild = Delete(BST->rightChild, X);
+	}
+	else
+	{
+		if (BST->leftChild && BST->rightChild)	//如果被删结点的左右孩子都有, 则在右子树中找最小值替代它, 并继续递归删除
+		{
+			temp = FindMin(BST->rightChild);
+			BST->data = temp->data;
+			BST->rightChild = Delete(BST->rightChild, BST->data);
+		}
+		else	//如果没有孩子 或者 只有一个孩子  (将二者统一)
+		{
+			temp = BST;
+			if (!BST->leftChild)		//没有左孩子, 则直接用右孩子替代即可
+			{
+				BST = BST->rightChild;
+			}
+			else if (!BST->rightChild)
+			{
+				BST = BST->leftChild;
+			}
+
+			free(temp);
+		}
+	}
+
+	return BST;
+}
