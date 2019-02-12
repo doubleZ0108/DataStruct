@@ -52,6 +52,25 @@ Position FindMax(BinTree BST)
 }
 
 
+Position Insert(BinTree BST, ElementType X)
+{
+	if (!BST)	//找到最后一层的时候 等价于 往空树上插
+	{
+		BST = malloc(sizeof(struct TreeNode));
+		BST->data = X;
+		BST->leftChild = BST->rightChild = NULL;
+	}
+	else
+	{
+		if (BST->data > X)	//往左子树上插, 将原来为NULL的左指针改成 下一层递归malloc出来的值
+			{ BST->leftChild = Insert(BST->leftChild, X); }
+		else if (BST->data < X) 
+			{ BST->rightChild = Insert(BST->rightChild, X); }
+	}
+
+	return BST;		//返回BST给上层递归 用来修改指针
+}
+
 Position Delete(BinTree BST, ElementType X)
 {
 	Position temp;
