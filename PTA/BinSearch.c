@@ -1,3 +1,10 @@
+/*
+ *函数Insert将X插入二叉搜索树BST并返回结果树的根结点指针；
+ *函数Delete将X从二叉搜索树BST中删除，并返回结果树的根结点指针；如果X不在树中，则打印一行Not Found并返回原树的根结点指针；
+ *函数Find在二叉搜索树BST中找到X，返回该结点的指针；如果找不到则返回空指针；
+ *函数FindMin返回二叉搜索树BST中最小元结点的指针；
+ *函数FindMax返回二叉搜索树BST中最大元结点的指针。
+*/
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -80,7 +87,7 @@ BinTree Delete(BinTree BST, ElementType X)
 		return BST;
 	}
 	else if (BST->Data > X) { BST->Left = Delete(BST->Left, X); }
-	else if (BST->Right < X) { BST->Right = Delete(BST->Right, X); }
+	else if (BST->Data < X) { BST->Right = Delete(BST->Right, X); }
 	else
 	{
 		if (BST->Left && BST->Right)
@@ -93,7 +100,7 @@ BinTree Delete(BinTree BST, ElementType X)
 		{
 			temp = BST;
 			if (!BST->Left) { BST = BST->Right; }
-			if (!BST->Right) { BST = BST->Left; }
+			else if (!BST->Right) { BST = BST->Left; }
 
 			free(temp);
 		}
