@@ -4,6 +4,25 @@
  *函数Find在二叉搜索树BST中找到X，返回该结点的指针；如果找不到则返回空指针；
  *函数FindMin返回二叉搜索树BST中最小元结点的指针；
  *函数FindMax返回二叉搜索树BST中最大元结点的指针。
+ 
+ 输入样例：
+10
+5 8 6 2 4 1 0 10 9 7
+5
+6 3 10 0 5
+5
+5 7 0 10 3
+输出样例：
+Preorder: 5 2 1 0 4 8 6 7 10 9
+6 is found
+3 is not found
+10 is found
+10 is the largest key
+0 is found
+0 is the smallest key
+5 is found
+Not Found
+Inorder: 1 2 4 6 8 9
 */
 #include <stdio.h>
 #include <stdlib.h>
