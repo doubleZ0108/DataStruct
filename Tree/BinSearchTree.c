@@ -32,7 +32,7 @@ Position Find_nonRecursive(BinTree BST, ElementType X)
 /*二叉搜索树中最小的元素即为树中最左边的元素*/
 Position FindMin(BinTree BST)
 {
-	if (BST)	//空树
+	if (!BST)	//空树
 		{ return NULL; }
 	else if	(!BST->leftChild) //左孩子为空 => 此节点是最左的结点了
 		{ return BST; }
