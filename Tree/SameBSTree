@@ -3,7 +3,16 @@
 	1.分别构造两棵树, 再调用TreeEqual逐步比较是否相同
 	2.不构建任何搜索树, 直接用序列进行比较 => JudgeEqual_sequence	
 		(注:树中有相同结点的情况没做考虑
+	3.构建一个基准树,然后在基准树中一个个找待比较树序列的结点
+	  找过一个结点就将其flag标记为true
+	  如果按顺序找时路上碰到了flag==false 但是不是当前结点的 则不相同
+	  (简言之,必须按照从顶到下的顺序将基准树一点点染色,则最后两个序列构成的搜索树相同;
+	   如果跨越了上面染色则不相同)
 */
+#include <iostream>
+#include <cstdlib>
+#include <vector>
+using namespace std;
 
 typedef struct TreeNode *BSTree;
 struct TreeNode
@@ -18,12 +27,13 @@ bool TreeEqual(BSTree T1, BSTree T2)
 	if (!T1 && !T2) { return true; }
 	else if (T1 && T2)
 	{
-		if (T1->v == T2->v) { return (TreeEqual(T1->leftChild, T2->leftChild) && TreeEqual(T1->RightChild, T2->RightChild);) }
+		if (T1->v == T2->v) { return (TreeEqual(T1->leftChild, T2->leftChild) && TreeEqual(T1->RightChild, T2->RightChild)); }
 		else { return false; }	//有节点信息不同
 	}
 	else { return false; }		//一个空几个不空
 }
 
+/////////////////////////////////////////////////////////////////////////////
 void divideSequence(vector<int> &seq1, vector<int> &seq2, 
 	vector<int> &seq1_less, vector<int> &seq1_greater, 
 	vector<int> &seq2_less, vector<int> &seq2_greater)
@@ -60,4 +70,116 @@ bool JudgeEqual_sequence(vector<int> &seq1, vector<int> &seq2)
 	}
 	//其他情况: 一个空一个不空
 	else { return false; }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
+/*申请一个值为V的新结点并做初始化*/
+BSTree NewTreeNode(int V)
+{
+	BSTree fresh = new TreeNode;
+	fresh->v = V;
+	fresh->leftChild = fresh->RightChild = NULL;
+	fresh->flag = false;
+	
+	return fresh;
+}
+
+/*使用Tnsert构建搜索树*/
+BSTree Insert(BSTree root, int V)
+{
+	if (!root) { root = NewTreeNode(V); }
+	else
+	{
+		if (V < root->v) { root->leftChild = Insert(root->leftChild, V); }
+		else if (V > root->v) { root->RightChild = Insert(root->RightChild, V); }
+	}
+
+	return root;
+}
+
+/*构建基准搜索树*/
+BSTree CreateBSTree(vector<int> &seq)
+{
+	if (seq.empty()) { return NULL; }
+
+	BSTree root = NewTreeNode(seq[0]);
+
+	for (int i = 1; i < seq.size(); ++i)
+	{
+		Insert(root, seq[i]);
+	}
+
+	return root;
+}
+
+bool check(BSTree T, int V)
+{
+	if (T->flag)
+	{
+		if (V < T->v) { return check(T->leftChild, V); }
+		else if (V > T->v) { return check(T->RightChild, V); }
+		else { return false; }	//待检查的树中有两个结点相同认为是不可以的
+	}
+	else
+	{
+		if (V == T->v)	//如果没访问过的结点值正好是要判断的, 则万事大吉, 再修改个flag
+		{
+			T->flag = true;
+			return true;
+		}
+		else { return false; }
+	}
+}
+
+bool JudgeEqual(BSTree T, vector<int> &seq)
+{
+	if (!T && seq.empty()) { return true; }
+	else if (T && !seq.empty())
+	{
+		for (int i = 0; i < seq.size(); ++i)
+		{
+			if (!check(T, seq[i])) { return false; }
+		}
+
+		return true;
+	}
+	else { return false; }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+/*使用*/
+int main(void)
+{
+	vector<int> seq1, seq2;
+	int size1, size2;
+	cin >> size1;
+	seq1.resize(size1);
+	for (int i = 0; i < size1; ++i)
+	{
+		cin >> seq1[i];
+	}
+	cin >> size2;
+	seq2.resize(size2);
+	for (int i = 0; i < size2; ++i)
+	{
+		cin >> seq2[i];
+	}
+
+	cout << "first: ";
+	BSTree T1, T2;
+	T1 = CreateBSTree(seq1);
+	T2 = CreateBSTree(seq2);
+	cout << (TreeEqual(T1, T2) ? "yes" : "no") << endl;
+
+
+	cout << "second: ";
+	cout << (JudgeEqual_sequence(seq1, seq2) ? "yes" : "no") << endl;
+
+	cout << "third: ";
+	cout << (JudgeEqual(T1, seq2) ? "yes" : "no") << endl;
+
+	system("pause");
+	return 0;
 }
