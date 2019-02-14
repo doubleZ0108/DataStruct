@@ -1,3 +1,6 @@
+/*
+
+*/
 #include <iostream>
 #include <cstdlib>
 using namespace std;
@@ -10,9 +13,43 @@ struct TreeNode
 	bool flag;
 };
 
-BSTree CreateBSTree(void)
+/*申请一个值为V的新结点并做初始化*/
+BSTree NewTreeNode(int V)
 {
+	BSTree fresh = new TreeNode;
+	fresh->v = V;
+	fresh->leftChild = fresh->RightChild = NULL;
+	fresh->flag = false;
+	
+	return fresh;
+}
 
+/*使用Tnsert构建搜索树*/
+BSTree Insert(BSTree root, int V)
+{
+	if (!root) { root = NewTreeNode(V); }
+	else
+	{
+		if (V < root->v) { Insert(root->leftChild, V); }
+		else if (V > root->v) { Insert(root->RightChild, V); }
+	}
+
+	return root;
+}
+
+/*构建基准搜索树*/
+BSTree CreateBSTree(int N)
+{
+	int V; cin >> V;
+	BSTree root = NewTreeNode(V);
+
+	for (int i = 1; i < N; ++i)
+	{
+		cin >> V;
+		Insert(root, V);
+	}
+
+	return root;
 }
 
 bool JudgeEqual(BSTree T)
@@ -44,7 +81,7 @@ int main(void)
 	while (cin>>N && N)
 	{
 		cin >> L;
-		T = CreateBSTree();
+		T = CreateBSTree(N);
 		for (int i = 0; i < L; ++i)
 		{
 			cout << (JudgeEqual(T)? "Yes\n" : "No\n") << endl;
