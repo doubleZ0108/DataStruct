@@ -1,0 +1,63 @@
+/*
+	判断两个序列构成的二叉搜索树是否相同的三种方法
+	1.分别构造两棵树, 再调用TreeEqual逐步比较是否相同
+	2.不构建任何搜索树, 直接用序列进行比较 => JudgeEqual_sequence	
+		(注:树中有相同结点的情况没做考虑
+*/
+
+typedef struct TreeNode *BSTree;
+struct TreeNode
+{
+	int v;
+	BSTree leftChild, RightChild;
+	bool flag;
+};
+
+bool TreeEqual(BSTree T1, BSTree T2)
+{
+	if (!T1 && !T2) { return true; }
+	else if (T1 && T2)
+	{
+		if (T1->v == T2->v) { return (TreeEqual(T1->leftChild, T2->leftChild) && TreeEqual(T1->RightChild, T2->RightChild);) }
+		else { return false; }	//有节点信息不同
+	}
+	else { return false; }		//一个空几个不空
+}
+
+void divideSequence(vector<int> &seq1, vector<int> &seq2, 
+	vector<int> &seq1_less, vector<int> &seq1_greater, 
+	vector<int> &seq2_less, vector<int> &seq2_greater)
+{
+	for (int i = 1; i < seq1.size(); ++i)
+	{
+		if (seq1[i] < seq1[0]) { seq1_less.push_back(seq1[i]); }
+		else if (seq1[i] > seq1[0]) { seq1_greater.push_back(seq1[i]); }
+	}
+	for (int i = 1; i < seq2.size(); ++i)
+	{
+		if (seq2[i] < seq2[0]) { seq2_less.push_back(seq2[i]); }
+		else if (seq2[i] > seq2[0]) { seq2_greater.push_back(seq2[i]); }
+	}
+}
+bool JudgeEqual_sequence(vector<int> &seq1, vector<int> &seq2)
+//首先判断第一个元素是否相同(根)
+//把序列划分为两个部分(比根小的和比根大的), 并且保证元素的相对位置不变
+//如此递归,如果一直相同则两搜索树相同
+{
+	//都空
+	if (seq1.empty() && seq2.empty()) { return true; }
+	//都不空
+	else if (!seq1.empty() && !seq2.empty())
+	{
+		if (seq1[0] != seq2[0]) { return false; }
+		else
+		{
+			vector<int> seq1_less, seq1_greater, seq2_less, seq2_greater;
+			divideSequence(seq1, seq2, seq1_less, seq1_greater, seq2_less, seq2_greater);
+			
+			return (JudgeEqual_sequence(seq1_less, seq2_less) && JudgeEqual_sequence(seq1_greater, seq2_greater));
+		}
+	}
+	//其他情况: 一个空一个不空
+	else { return false; }
+}
