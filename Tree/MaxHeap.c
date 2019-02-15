@@ -1,3 +1,8 @@
+/*
+	两种构建最大堆的方法:
+	1. 将元素一个一个Insert进堆中
+	2. 先把所有元素依次加入到完全二叉树中, 再调用MakeMaxHeap调整成堆
+*/
 #define INFINITE 1<<30
 
 typedef int bool;
@@ -10,7 +15,8 @@ struct HeapStruct
 	int capacity;			//堆的最大容量
 };
 
-MaxHeap MakeMaxHeap(int MaxSize)
+/*创建一个空堆*/
+MaxHeap CreateMaxHeap(int MaxSize)
 {
 	MaxHeap H = malloc(sizeof(struct HeapStruct));
 	H->capacity = MaxSize;
@@ -21,6 +27,16 @@ MaxHeap MakeMaxHeap(int MaxSize)
 	return H;
 }
 
+bool isFull(MaxHeap H)
+{
+	return (H->size == H->capacity);
+}
+bool isEmpty(MaxHeap H)
+{
+	return (H->size == 0);
+}
+
+/*将元素item插入到堆中,其中0号位置已经定义为哨兵*/
 void Insert(MaxHeap H, ElementType item)
 {
 	if (isFull(H))
@@ -37,7 +53,7 @@ void Insert(MaxHeap H, ElementType item)
 	}
 	H->Elements[i] = item;
 }
-
+/*删除堆顶最大元素并重新调整成堆*/
 ElementType DeleteMax(MaxHeap H)
 {
 	if (isEmpty(H))
@@ -67,4 +83,32 @@ ElementType DeleteMax(MaxHeap H)
 	H->Elements[Parent] = tmp;	//把最后一个元素归位
 
 	return MaxItem;
+}
+
+
+/*----------- 建造最大堆 -----------*/
+void FilterDown(MaxHeap H, int current)
+{
+	int Parent, Child;
+	ElementType tmp = H->Elements[current];
+
+	for (Parent = current; Parent * 2 <= H->size; Parent = Child)
+	{
+		Child = Parent * 2;
+		if (Child != H->size &&
+			(H->Elements[Child] < H->Elements[Child + 1])) {
+			Child++;
+		}
+
+		if (tmp >= H->Elements[Child]) { break; }	//找到合适的位置
+		else { H->Elements[Child] = H->Elements[Parent]; }
+	}
+	H->Elements[Parent] = tmp;
+}
+void MakeMaxHeap(MaxHeap H)
+{
+	for (int i = H->size / 2; i > 0; --i)
+	{//从最后一个非叶子结点开始向下调整成堆
+		FilterDown(H, i);
+	}
 }
