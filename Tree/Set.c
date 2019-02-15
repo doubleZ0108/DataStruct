@@ -18,4 +18,6 @@ int FindRoot(SetType S[], ElementType X)
 
 	/*根的特征是 parent为-1*/
 	while (S[i].Parent >= 0) { i = S[i].Parent; }
+	
+	return i;
 }
