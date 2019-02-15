@@ -37,3 +37,34 @@ void Insert(MaxHeap H, ElementType item)
 	}
 	H->Elements[i] = item;
 }
+
+ElementType DeleteMax(MaxHeap H)
+{
+	if (isEmpty(H))
+	{
+		printf("堆为空!\n");
+		return INFINITE;
+	}
+
+	ElementType MaxItem = H->Elements[1];	//元素是从1开始存的
+
+	int Parent, Child;
+	ElementType tmp = H->Elements[H->size--];	//1.将最后位置的元素保存到tmp中		2.元素数减一
+
+	for (Parent = 1; Parent * 2 <= H->size; Parent = Child)
+	{//初始假设最后一个元素放到堆顶		一直往后找直到出界
+
+		/*将Child指向Parent最大的孩子*/
+		Child = Parent * 2;
+		if(Child!=H->size &&	//如果有右儿子再做第二个判断
+			(H->Elements[Child] < H->Elements[Child + 1])) {
+			Child++;
+		}
+
+		if (tmp > H->Elements[Child]) { break; }
+		else { H->Elements[Child] = H->Elements[Parent]; }
+	}
+	H->Elements[Parent] = tmp;	//把最后一个元素归位
+
+	return MaxItem;
+}
