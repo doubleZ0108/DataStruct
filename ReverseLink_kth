@@ -1,0 +1,24 @@
+struct NODE *Reverse(struct NODE *head, int K)
+{
+	int cnt = 1;
+	struct NODE *newer = head->next, *older = newer->next;
+	struct NODE *tmp;
+
+	while (cnt < K)
+	{
+		tmp = older->next;
+		older->next = newer;
+
+		newer = older;	older = tmp;
+
+		cnt++;
+	}
+
+	head->next->next = older;
+	return newer;				//返回的链表没有头结点,head就有值
+}
+
+
+/*
+  调用的时候 head->next=Reverse(head,K); 其中这里的链表定义方式都是习惯的方式(有头结点的)
+*/
