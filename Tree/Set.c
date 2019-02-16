@@ -52,3 +52,14 @@ void Union_num(SetType S, SetName root1, SetName root2)
 		S[root1] = root2;
 	}
 }
+
+
+/*----------------路径压缩----------------*/
+SetName Find(SetType S, ElementType X)
+{
+	if (S[X] < 0) { return X; }
+	else
+	{
+		return (S[X] = Find(S, S[X]));	//1.先找到根  2.将X的父节点强行改成根节点  3.返回根节点
+	}
+}
