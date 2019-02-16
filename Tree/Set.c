@@ -21,3 +21,34 @@ int FindRoot(SetType S[], ElementType X)
 	
 	return i;
 }
+
+
+/*----------------按秩归并----------------*/
+/*根节点保存 -集合的高度*/
+void Union_height(SetType S, SetName root1, SetName root2)
+{
+	if (S[root1] < S[root2])	//1的高度大于2	(负数的比较)
+	{
+		S[root2] = root1;	//将2挂到1上
+	}
+	else
+	{
+		if (S[root1] == S[root2])	//由于12高度相等时仍是把1挂到2上,所以2的高度要递增 => S[root2]--
+			{ S[root2]--; }
+		S[root1] = root2;
+	}
+}
+/*根节点保存 -集合中元素数量*/
+void Union_num(SetType S, SetName root1, SetName root2)
+{
+	if (S[root1] < S[root2])	//1比2结点多
+	{
+		S[root1] += S[root2];
+		S[root2] = root1;
+	}
+	else
+	{
+		S[root2] += S[root1];
+		S[root1] = root2;
+	}
+}
