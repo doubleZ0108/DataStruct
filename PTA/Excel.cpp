@@ -58,11 +58,13 @@ int main(void)
 	}
 
 	bool(*FuncPtr[3])(const Student, const Student) = { myless_num,myless_name,myless_grade };
-	//vector<bool(*)(const Student, const Student)> FuncPtr(N);
 	sort(studVec.begin(), studVec.end(), FuncPtr[C-1]);
-
-	for_each(studVec.begin(), studVec.end(), [](Student buf) {cout << buf << endl; });
-
+	
+	//for_each(studVec.begin(), studVec.end(), [](Student buf) {cout << buf << endl; });
+	for (int i = 0; i < N; ++i)
+	{
+		printf("%s %s %d\n", studVec[i].num.c_str(), studVec[i].name.c_str(), studVec[i].grade);
+	}
 	system("pause");
 	return 0;
 }
