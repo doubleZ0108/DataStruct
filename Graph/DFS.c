@@ -1,3 +1,4 @@
+//类似于树的先序遍历
 void DFS(Vertex V)
 {
 	visited[V] = true;
