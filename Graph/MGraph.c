@@ -21,3 +21,23 @@ struct GNode {
 	DataType Data[MaxVertexNum];				//顶点集合
 };
 typedef PtrToGNode MGraph;		//以邻接矩阵储存的图类型
+
+
+
+/*初始化一个图*/
+MGraph CreateGraph(int VertexNum)
+{
+	MGraph graph = malloc(sizeof(struct GNode));
+	graph->Nv = VertexNum;
+	graph->Ne = 0;
+
+	for (Vertex V = 0; V < graph->Nv; ++V)
+	{
+		for (Vertex W = 0; W < graph->Nv; ++W)
+		{
+			graph->G[V][W] = 0;		//有权图初始化为INFINITE
+		}
+	}
+
+	return graph;
+}
