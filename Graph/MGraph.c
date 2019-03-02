@@ -51,3 +51,34 @@ void InsertEdge(MGraph graph, Edge E)
 	//无向图的话还要插入<v2,v1>
 	graph->G[E->v2][E->v1] = E->weight;
 }
+
+
+/*建立一个图*/
+//输入格式: 
+//	Nv Ne
+//	v1 v2 weight
+//	......
+MGraph BuildGraph(void)
+{
+	int Ne;
+	scanf("%d", &Ne);
+
+	MGraph graph = CreateGraph(Ne);
+	scanf("%d", &(graph->Nv));
+
+	if (graph->Nv != 0)
+	{
+		Edge E = malloc(sizeof(struct ENode));
+		for (int i = 0; i < graph->Ne; ++i)
+		{
+			scanf("%d %d %d", &E->v1, &E->v2, &E->weight);
+			InsertEdge(graph, E);
+		}
+	}
+
+	//如果顶点有数据的话再读入顶点的数据
+	for (int i = 0; i < graph->Nv; ++i) 
+		{ scanf("%c", &graph->Data[i]); }
+
+	return graph;
+}
