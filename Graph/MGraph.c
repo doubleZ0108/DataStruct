@@ -41,3 +41,13 @@ MGraph CreateGraph(int VertexNum)
 
 	return graph;
 }
+
+/*插入一条边*/
+void InsertEdge(MGraph graph, Edge E)
+{
+	//插入<v1,v2>
+	graph->G[E->v1][E->v2] = E->weight;
+
+	//无向图的话还要插入<v2,v1>
+	graph->G[E->v2][E->v1] = E->weight;
+}
