@@ -28,7 +28,7 @@ void ShortestPath_UnweightSingalsource(Vertex S)
 		V = Q.front();	Q.pop();
 		for (V 的每个邻接点 W)
 		{
-			if (dist[W] == INFINITE)	//dist值仍为INFINITE证明没被访问过, 这里的功能同visited
+			if (dist[W] == NONE)	//dist值仍为NONE证明没被访问过, 这里的功能同visited
 			{
 				dist[W] = dist[V] + 1;	//由于是无权图, S到W的距离 为 S到倒数第二个顶点V距离+1
 				path[W] = V;	//从S到W的路径上倒数第二个顶点是V
@@ -37,3 +37,21 @@ void ShortestPath_UnweightSingalsource(Vertex S)
 		}
 	}
 }
+void showShortestPath(Vertex V)
+{
+	stack<Vertex> S;	//运用栈后进先出的特性正序输出 从源点到V的路径
+
+	while (path[V] != NONE)	//逆序找path[], 直到path中储存的元素为-1, 则意味着已经找到源点了
+	{
+		S.push(V);
+		V = path[V];
+	}
+
+	while (!S.empth())
+	{
+		cout << S.top() << ' ';
+		S.pop();
+	}
+}
+
+
