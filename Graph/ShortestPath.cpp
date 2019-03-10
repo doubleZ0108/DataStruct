@@ -1,30 +1,21 @@
-#define INFINITE 1<<30
+#define NONE -1
 
 /*无权 单源 最短路径问题*/
 //边上的权值为1, 只是求从某一确定的源点到其他各点的最短路径
 /*
 	dist[W] => S到W的最短距离
-	dist[S]初始化为0, 其余各点与S相邻初始化为1, 否则初始化为INFINITE
+	dist[S]初始化为0, 其余各点初始化为NONE
 	path[W] => S到W路径上最后经过的点
 		(最后输出S到W的路径时, 不停的找path[W]直到找到源点, 由于path是反着存储的, 所以可以压入栈, 以达到后进先出输出从S到W的路径)
 */
 void Init(int dist[], int path[], Vertex S, int VertexNum)	//初始化dist和path
 {
-	dist[S] = 0;	//源点的dist为0
-	path[S] = S;
 	for(Vertex V=0; V<VertexNum; ++V)
 	{
-		if(S和V邻接)
-		{
-			dist[V] = 1;
-			path[V] = S;
-		}	
-		else
-		{
-			dist[V] = INFINITE;
-			path[V] = NULL;
-		}
+		dist[V] = NONE;
+		path[V] = NONE;
 	}
+	dist[S] = 0;	//源点的dist为0
 }
 void ShortestPath_UnweightSingalsource(Vertex S)
 {
