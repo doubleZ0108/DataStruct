@@ -59,3 +59,22 @@ void ShortestPath_Dijkstra(Vertex S)
 		}
 	}
 }
+
+
+//输出最短路径的方法仍是一样的, 一直捋着path直到找到-1为止
+void showShortestPath(Vertex V)
+{
+	stack<Vertex> S;	//运用栈后进先出的特性正序输出 从源点到V的路径
+
+	while (path[V] != -1)	//逆序找path[], 直到path中储存的元素为-1, 则意味着已经找到源点了
+	{
+		S.push(V);
+		V = path[V];
+	}
+
+	while (!S.empth())
+	{
+		cout << S.top() << ' ';
+		S.pop();
+	}
+}
