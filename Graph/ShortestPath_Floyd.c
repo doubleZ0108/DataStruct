@@ -33,3 +33,16 @@ void ShortestPath_Floyd(void)
 		}
 	}
 }
+
+
+//递归的方式打印, 先递归调用i~k => 打印k => 再递归调用k~j
+void showShortestPath(Vertex i, Vertex j)
+{
+	if (i == j) { return; }
+
+	Vertex k = path[i][j];
+
+	showShortestPath(i, k);
+	printf("%c ", k);
+	showShortestPath(k, j);
+}
