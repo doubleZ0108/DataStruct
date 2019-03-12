@@ -3,7 +3,7 @@
 
   * 对于稀疏图,可以直接将单源有权的Dijkstra算法调用VertexNum遍即可
   * 对于稠密图 => Floyd算法
-
+  * 不能解决有负值圈的情况
 */
 void Init(int **D, int **path, int VertexNum)
 {
@@ -16,7 +16,7 @@ void Init(int **D, int **path, int VertexNum)
 		}
 	}
 }
-void ShortestPath_Floyd(void)
+bool ShortestPath_Floyd(void)
 {
 	for (int k = 0; k < N; ++k)
 	{
@@ -28,10 +28,15 @@ void ShortestPath_Floyd(void)
 				{
 					D[i][j] = D[i][k] + D[k][j];
 					path[i][j] = k;		//从i到j经过k, 而且是 从i到k再到j
+					
+					if(i==j && D[i][j]<0)	//发现负值圈, 不能正常解决, 返回错误标识
+						{return false;}
 				}
 			}
 		}
 	}
+	
+	return true;
 }
 
 
