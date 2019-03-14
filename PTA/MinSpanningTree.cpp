@@ -48,25 +48,39 @@ class Road
 private:
 	int Nv, Ne;
 	vector<Edge> E;
-	
+
 	vector<int> myset;
 
 	void InitEdge();
 
 	int parent(int V)
 	{
-		while (myset[V] != -1)
+		if (myset[V] == V) { return myset[V]; }
+		myset[V] = parent(myset[V]);
+		return myset[V];
+		/*while (myset[V] != -1)
 		{
 			V = myset[V];
 		}
-		return V;
+		return V;*/
+	}
+	bool merge(int v, int w)
+	{
+		int pv = parent(v);
+		int pw = parent(w);
+		if (pv != pw)
+		{
+			myset[pv] = pw;
+			return true;
+		}
+		return false;
 	}
 public:
 	Road() = default;
 	Road(int Vnum, int Enum);
 
 	int MST();
-	
+
 };
 
 int main(void)
@@ -83,10 +97,13 @@ int main(void)
 }
 
 Road::Road(int Vnum, int Enum)
-	:Nv(Vnum),Ne(Enum)
+	:Nv(Vnum), Ne(Enum)
 {
-	myset.resize(Nv, -1);
-
+	myset.resize(Nv);
+	for (int i = 0; i < Nv; ++i)
+	{
+		myset[i] = i;
+	}
 	InitEdge();
 }
 
@@ -105,15 +122,13 @@ int Road::MST()
 {
 	vector<Edge> result;
 
-	vector<Edge>::iterator iter;
+	sort(E.begin(), E.end());
 	Edge buf;
 	while (result.size() < Nv - 1 && !E.empty())
 	{
-		iter = min_element(E.begin(), E.end());
-		buf = *iter;
-		E.erase(iter, iter + 1);
+		buf = E.front();	E.erase(E.begin(), E.begin() + 1);
 
-		if (parent(buf.v1) != parent(buf.v2))
+		/*if (parent(buf.v1) != parent(buf.v2))
 		{
 			result.push_back(buf);
 			if (parent(buf.v1) == buf.v1)
@@ -125,6 +140,10 @@ int Road::MST()
 			{
 				myset[buf.v2] = buf.v1;
 			}
+		}*/
+		if (merge(buf.v1, buf.v2))
+		{
+			result.push_back(buf);
 		}
 	}
 
@@ -132,6 +151,7 @@ int Road::MST()
 	else {
 		int sum = 0;
 		for_each(result.begin(), result.end(), [&sum](Edge E) {sum += E.cost; });
+		
 		return sum;
 	}
 }
