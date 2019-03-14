@@ -130,16 +130,8 @@ int Road::MST()
 
 		/*if (parent(buf.v1) != parent(buf.v2))
 		{
+			
 			result.push_back(buf);
-			if (parent(buf.v1) == buf.v1)
-			{
-				if (parent(buf.v2) == buf.v2) { myset[buf.v1] = buf.v2; }
-				else { myset[buf.v1] = buf.v2; }
-			}
-			else
-			{
-				myset[buf.v2] = buf.v1;
-			}
 		}*/
 		if (merge(buf.v1, buf.v2))
 		{
@@ -155,3 +147,14 @@ int Road::MST()
 		return sum;
 	}
 }
+
+/*
+注释掉的部分是自己写的并差集
+正确的使用方法如下:
+if (parent(buf.v1) != parent(buf.v2))
+{
+	myset[parent(buf.v1)] = parent(buf.v2);
+	result.push_back(buf);
+}
+合并的是两个parent, 不是两个结点本身
+*/
