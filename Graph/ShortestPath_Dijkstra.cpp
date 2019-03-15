@@ -48,7 +48,7 @@ void ShortestPath_Dijkstra(Vertex S)
 
 		for (V 的每个邻接点 W)
 		{
-			if (collect[W] = false)
+			if (collect[W] == false)
 			{
 				if (dist[V] + E<V, W> < dist[W])	//如果新确定的这个V会让某个W的dist值变小, 则更新W的dist和path
 				{
