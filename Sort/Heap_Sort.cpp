@@ -1,14 +1,14 @@
 void FilterDown(ElementType arr[], int current, int N)
 {
-	if (N == 1) { return; }
+	if (N == 1) { return; }		//规模为1的堆不用调整了
 
 	int Parent, Child;
 	ElementType tmp = arr[current];
 
-	for (Parent = current; Parent * 2 + 1 <= N; Parent = Child)
+	for (Parent = current; Parent * 2 + 1 < N; Parent = Child)		//注意判断条件: 左孩子在堆的规模内
 	{
 		Child = Parent * 2 + 1;
-		if (Child != N-1 &&
+		if (Child != N-1 &&						//第一个条件: 左孩子不是最后一个元素(规模是n, 最后一个元素下标是n-1
 			(arr[Child] < arr[Child + 1])) {
 			Child++;
 		}
