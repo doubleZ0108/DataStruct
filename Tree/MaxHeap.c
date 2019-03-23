@@ -101,7 +101,7 @@ void FilterDown(MaxHeap H, int current)
 		}
 
 		if (tmp >= H->Elements[Child]) { break; }	//找到合适的位置
-		else { H->Elements[Child] = H->Elements[Parent]; }
+		else { H->Elements[Parent] = H->Elements[Child]; }
 	}
 	H->Elements[Parent] = tmp;
 }
