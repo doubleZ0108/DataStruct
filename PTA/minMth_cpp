@@ -1,0 +1,26 @@
+/*
+找N个数中最大的M个    
+注意: M可能比N大
+*/
+#include <iostream>
+#include <cstdlib>
+#include <vector>
+#include <functional>
+#include <algorithm>
+using namespace std;
+
+int main(void)
+{
+	int n, m;	cin >> n >> m;
+	vector<int> source(n);
+
+	for (int i = 0; i < n; ++i) { scanf("%d", &source[i]); }
+
+	partial_sort(source.begin(), source.begin()+min(m,n),source.end(), greater<int>()); //m和n要取小
+
+	cout << *(source.begin());
+	for_each(source.begin()+1, source.begin()+min(m,n), [](int n) {printf(" %d", n); }); //m和n要取小
+
+	system("pause");
+	return 0;
+}
