@@ -1,6 +1,8 @@
 /*
 找N个数中最大的M个    
 注意: M可能比N大
+
+该代码中忽略结尾不许有空格问题
 */
 #include <iostream>
 #include <cstdlib>
@@ -9,6 +11,26 @@
 #include <algorithm>
 using namespace std;
 
+void Mth_STL_partical_sort(vector<int> &source)
+{
+	/*找到序列的前min(m,n)元素并将它们排序*/
+	partial_sort(source.begin(), source.begin()+min(m,n),source.end(), greater<int>()); //m和n要取小
+
+	for_each(source.begin(), source.begin()+min(m,n), [](int n) {printf("%d ", n); }); //m和n要取小
+}
+
+void Mth_STL_make_heap(vector<int> &source)
+{
+	make_heap(source.begin(), source.end());	//初始将序列调整成最大堆
+
+	for (int i = 0; i < min(m, n); ++i)
+	{
+		pop_heap(source.begin(), source.end());	//将堆顶元素交换到最后，并重新调整堆
+		cout << source.back() << ' ' ；
+		source.pop_back();			//将末端元素出书并删除
+	}
+}
+
 int main(void)
 {
 	int n, m;	cin >> n >> m;
@@ -16,10 +38,9 @@ int main(void)
 
 	for (int i = 0; i < n; ++i) { scanf("%d", &source[i]); }
 
-	partial_sort(source.begin(), source.begin()+min(m,n),source.end(), greater<int>()); //m和n要取小
-
-	cout << *(source.begin());
-	for_each(source.begin()+1, source.begin()+min(m,n), [](int n) {printf(" %d", n); }); //m和n要取小
+	///////////////////////////////////
+	//这里选一个算法
+	//////////////////////////////////
 
 	system("pause");
 	return 0;
