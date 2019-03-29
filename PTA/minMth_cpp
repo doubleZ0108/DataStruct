@@ -11,6 +11,7 @@
 #include <algorithm>
 using namespace std;
 
+///////////////////////////////////////////////////////////////////////////////
 void Mth_STL_partical_sort(vector<int> &source)
 {
 	/*找到序列的前min(m,n)元素并将它们排序*/
@@ -19,6 +20,7 @@ void Mth_STL_partical_sort(vector<int> &source)
 	for_each(source.begin(), source.begin()+min(m,n), [](int n) {printf("%d ", n); }); //m和n要取小
 }
 
+///////////////////////////////////////////////////////////////////////////////
 void Mth_STL_make_heap(vector<int> &source)
 {
 	make_heap(source.begin(), source.end());	//初始将序列调整成最大堆
@@ -30,6 +32,48 @@ void Mth_STL_make_heap(vector<int> &source)
 		source.pop_back();			//将末端元素出书并删除
 	}
 }
+
+///////////////////////////////////////////////////////////////////////////////
+void FilterDown(vector<int> &seq, int current, int last)
+{
+	if (last == 1) { return; }
+
+	int parent, child;
+	int tmp = seq[current];
+
+	for (parent = current; 2 * parent + 1 < last; parent = child)
+	{
+		child = 2 * parent + 1;
+		if (child != last - 1 && seq[child] < seq[child + 1]) { child++; }
+
+		if (tmp >= seq[child]) { break; }
+		else { seq[parent] = seq[child]; }
+	}
+	seq[parent] = tmp;
+}
+void makeMaxHeap(vector<int> &seq)
+{
+	for (int i = seq.size() / 2 - 1; i >= 0; --i)
+	{
+		FilterDown(seq, i, seq.size());
+	}
+}
+
+void Mth_STL_myHeap(vector<int> &source)
+{
+	makeMaxHeap(source);
+
+	for (int i = 0; i < min(m, n); ++i)
+	{
+		cout << source[0] << ' ';
+		swap(source[0], source[n - i - 1]);
+		FilterDown(source, 0, n - i - 1);
+	}
+}
+
+
+
+
 
 int main(void)
 {
