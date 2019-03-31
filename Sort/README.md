@@ -28,3 +28,13 @@ DM = ⌊N/2⌋, Dk-1 = ⌊Dk/2⌋
 
 **参考的gap取法**
 ![参考的gap取法](https://upload-images.jianshu.io/upload_images/12014150-026896ae111c0c1a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+
+---
+#### 归并排序(稳定)
+> 其实只有Merge中才真正用到tmp数组, 为什么不在Merge中声明tmp呢?
+> > 在接口函数中直接开辟一个大的空间, 比Merge中一次一次声明小空间要合算的多
+
+**接口函数中开辟只用一个大数组就好**
+**Merge中反复开辟空间↓**
+![Merge中反复开辟空间](https://upload-images.jianshu.io/upload_images/12014150-ceb521989c012450.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
