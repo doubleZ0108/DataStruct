@@ -49,9 +49,16 @@ void Merge_Sort(ElementType arr[], ElementType tmp[], int low, int high)
 	}
 }
 
+/*接口函数 - 重载*/
+void Merge_Sort(ElementType arr[], int N)
+{
+	ElementType *tmp = new ElementType[N];
 
+	if (tmp)
+	{
+		Merge_Sort(arr, tmp, 0, N - 1);
 
-
-/*调用接口*/
-ElementType arr[N], tmp[N];
-Merge_Sort(arr, tmp, 0, N - 1);
+		delete[]tmp;
+	}
+	else { cerr << "Memory Allocation Failed!" << endl; }
+}
