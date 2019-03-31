@@ -33,7 +33,7 @@ void Merge(ElementType arr[], ElementType tmp[], int leftStart, int rightStart, 
 	}
 }
 
-void Merge_Sort(ElementType arr[], ElementType tmp[], int low, int high)
+void MSort(ElementType arr[], ElementType tmp[], int low, int high)
 {
 	int mid;
 	if (low < high)		//low==high时序列只有一个元素, 不用再排了
@@ -41,8 +41,8 @@ void Merge_Sort(ElementType arr[], ElementType tmp[], int low, int high)
 		mid = (low + high) / 2;
 
 		/*Divide & Conquer*/
-		Merge_Sort(arr, tmp, low, mid);
-		Merge_Sort(arr, tmp, mid + 1, high);
+		MSort(arr, tmp, low, mid);
+		MSort(arr, tmp, mid + 1, high);
 		
 		/*Combine*/
 		Merge(arr, tmp, low, mid + 1, high);
@@ -56,7 +56,7 @@ void Merge_Sort(ElementType arr[], int N)
 
 	if (tmp)
 	{
-		Merge_Sort(arr, tmp, 0, N - 1);
+		Mort(arr, tmp, 0, N - 1);
 
 		delete[]tmp;
 	}
