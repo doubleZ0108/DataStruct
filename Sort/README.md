@@ -38,3 +38,5 @@ DM = ⌊N/2⌋, Dk-1 = ⌊Dk/2⌋
 **接口函数中开辟只用一个大数组就好**
 **Merge中反复开辟空间↓**
 ![Merge中反复开辟空间](https://upload-images.jianshu.io/upload_images/12014150-ceb521989c012450.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+
