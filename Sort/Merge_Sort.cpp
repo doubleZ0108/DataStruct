@@ -53,7 +53,7 @@ void MSort(ElementType arr[], ElementType tmp[], int low, int high)
 	}
 }
 
-/*接口函数 - 重载*/
+/*接口函数*/
 void Merge_Sort(ElementType arr[], int N)
 {
 	ElementType *tmp = new ElementType[N];
@@ -61,6 +61,51 @@ void Merge_Sort(ElementType arr[], int N)
 	if (tmp)
 	{
 		Mort(arr, tmp, 0, N - 1);
+
+		delete[]tmp;
+	}
+	else { cerr << "Memory Allocation Failed!" << endl; }
+}
+
+
+
+
+
+//////////////////////////////////////////////////////////////////
+//非递归算法
+
+/*length为当前归并时每一组的长度*/
+void MergePass(ElementType arr[], ElementType tmp[], int N, int length)
+{
+	int i;
+
+	for (i = 0; i <= N - 2 * length; i += 2 * length)	//最后"两段"的归并单独考虑
+	{
+		Merge(arr, tmp, i, i + length, i + 2 * length - 1, false);
+	}
+
+	if (i + length < N)		//最后特殊的部分是两段的合并(第二段有可能长度不够, 但是无论怎样第一段都是length长, 且第二段的终点都是N-1)
+		{ Merge(arr, tmp, i, i + length, N - 1, false); }
+	else					//最后只剩一段了, 不用再归并了, 但是要把arr拷贝到tmp中
+		{ for (int j = i; j < N; ++j) { tmp[j] = arr[j]; } }
+}
+
+void Merge_Sort(ElementType arr[], int N)
+{
+	ElementType *tmp = new ElementType[N];
+
+
+	if (tmp)
+	{
+		int length = 1;
+		while (length < N)
+		{
+			MergePass(arr, tmp, N, length);
+			length *= 2;
+
+			MergePass(tmp, arr, N, length);
+			length *= 2;
+		}
 
 		delete[]tmp;
 	}
