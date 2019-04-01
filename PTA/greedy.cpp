@@ -18,6 +18,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <vector>
+#include <functional>
+#include <algorithm>
 using namespace std;
 
 int main(void)
@@ -33,18 +35,30 @@ int main(void)
 	sort(goods.begin(), goods.end());
 
 	int sum = 0;
+
+	/*负的优惠券和负的商品都是从0开始计数的*/
 	for (int i = 0; coupon[i] < 0 && goods[i] < 0; ++i)
 	{
 		sum += coupon[i] * goods[i];
 	}
 	
+	/*正的优惠券和正的商品结束的位置是不同的*/
 	for (int i = n - 1, j = m - 1; coupon[i] > 0 && goods[j] > 0; --i, --j)
 	{
 		sum += coupon[i] * goods[j];
 	}
 	
+	/*也可以再从大到小排一下序做*/
+	/*sort(coupon.begin(), coupon.end(), greater<int>());
+	sort(goods.begin(), goods.end(), greater<int>());
+	for (int i = 0; coupon[i] > 0 && goods[i] > 0; ++i)
+	{
+		sum += coupon[i] * goods[i];
+	}*/
+
 	cout << sum << endl;
 
 	system("pause");
 	return 0;
 }
+
