@@ -1,5 +1,6 @@
 /*leftStart: 第一段序列的开始;  rightStart: 第二段序列的开始;  rightEnd: 第二段序列的结尾*/
-void Merge(ElementType arr[], ElementType tmp[], int leftStart, int rightStart, int rightEnd)
+//flag用于判断是否将tmp中的有序序列导回到arr中, 默认要导回 (非递归算法中要将结果保留在tmp中)
+void Merge(ElementType arr[], ElementType tmp[], int leftStart, int rightStart, int rightEnd, bool flag = true)
 {
 	int length = rightEnd - leftStart + 1;		//整体长度: 用于最后将tmp中排好序的序列导回到arr时用
 	int tmpPtr = leftStart;						//有序序列的其实指针
@@ -27,9 +28,12 @@ void Merge(ElementType arr[], ElementType tmp[], int leftStart, int rightStart, 
 	}
 
 	/*最后将tmp中的有序序列导回到arr中*/
-	for (int i = 0; i < length; ++i, rightEnd--)
+	if (flag)
 	{
-		arr[rightEnd] = tmp[rightEnd];
+		for (int i = 0; i < length; ++i, rightEnd--)
+		{
+			arr[rightEnd] = tmp[rightEnd];
+		}
 	}
 }
 
