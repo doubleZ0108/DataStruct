@@ -32,6 +32,7 @@ DM = ⌊N/2⌋, Dk-1 = ⌊Dk/2⌋
 
 ---
 #### 归并排序(稳定)
+##### 递归算法
 > 其实只有Merge中才真正用到tmp数组, 为什么不在Merge中声明tmp呢?
 > > 在接口函数中直接开辟一个大的空间, 比Merge中一次一次声明小空间要合算的多
 
@@ -39,4 +40,12 @@ DM = ⌊N/2⌋, Dk-1 = ⌊Dk/2⌋
 **Merge中反复开辟空间↓**
 ![Merge中反复开辟空间](https://upload-images.jianshu.io/upload_images/12014150-ceb521989c012450.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
+##### 非递归算法
+不用每次都开辟一个n的空间
+其实只需要一个额外的空间就行, arr和tmp来回用
+![归并排序非递归算法](https://upload-images.jianshu.io/upload_images/12014150-35cd64ac5fb898c8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
+> 但是你只用两个导来导去, 最后一次不定是在arr中还是在tmp中
+> > 在每次循环中做两次MergePass, 最后可以保证最后的结果存在arr中(其实就是如果是奇数次的话, 多执行了一次tmp直接导给arr的操作)
+
+**归并排序在外排序中很常用, 内排序中基本不用**
