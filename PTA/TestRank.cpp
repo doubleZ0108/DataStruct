@@ -38,13 +38,14 @@
 #include <iostream>
 #include <cstdlib>
 #include <vector>
+#include <string>
 #include <functional>
 #include <algorithm>
 using namespace std;
 
 struct Node
 {
-	long long num;
+	string num;	//考号的类型必须定义为string, long long不知道什么原因nonAC
 	int score;
 	
 	int roomNum;
@@ -67,12 +68,12 @@ void Rank(vector<Node> &room, bool flag)
 {
 	sort(room.begin(), room.end(), cmp);
 
-	int nowscore=-1, rank = 1;
-	for (int i = 0; i < room.size(); ++i)
+	(flag ? room[0].roomRank : room[0].totalRank) = 1;
+	int rank = 2;
+	for (int i = 1; i < room.size(); ++i)
 	{
-		if (room[i].score != nowscore)
+		if (room[i].score != room[i-1].score)
 		{
-			nowscore = room[i].score;
 			(flag?room[i].roomRank:room[i].totalRank) = rank;
 		}
 		else
@@ -89,7 +90,7 @@ int main(void)
 
 	vector<vector<Node> > Room(n);
 
-	for (int i = 0; i < n; ++i)
+	for (int i = 0; i < n; ++i)	
 	{
 		cin >> k;
 		Room[i].resize(k);
@@ -112,7 +113,7 @@ int main(void)
 		total.insert(total.end(), Room[i].begin(), Room[i].end());
 	}
 	Rank(total, false);
-
+	
 
 	cout << total.size() << endl;
 	for (int i = 0; i < total.size(); ++i)
