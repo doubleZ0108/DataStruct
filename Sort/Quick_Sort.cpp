@@ -39,3 +39,31 @@ void Quick_Sort(ElementType arr[], int N)
 {
 	QSort(arr, 0, N - 1);
 }
+
+
+
+
+/*待排元素很少时使用直接插入排序*/
+void QSort(ElementType arr[], int left, int right)
+{
+	if (right - left >= CUTOFF)		//用阈值限定, 不需要递归终止条件
+	{
+		ElementType Pivot = Median3(arr, left, right);
+		int low = left, high = right - 1;
+
+		while (low < high)
+		{
+			while (arr[++low] < Pivot) {}
+			while (arr[--high]>Pivot) {}
+
+			if (low < high) { swap(arr[low], arr[high]); }
+			else { break; }
+		}
+
+		swap(arr[low], arr[right - 1]);	
+		QSort(arr, left, low - 1);
+		QSort(arr, low + 1, right);
+	}
+	else	//当元素个数很少时调用插入排序
+		{ Insertion_Sort(arr + left, right - left + 1); }	//注意是从arr + left开始的
+}
