@@ -49,7 +49,7 @@ DM = ⌊N/2⌋, Dk-1 = ⌊Dk/2⌋
 
 **归并排序在外排序中很常用, 内排序中基本不用**
 
-#### 快速排序
+#### 快速排序(不稳定)
 > 快的很重要一个原因是: 调完划分, 每次得到的pivot的位置都是该元素最终的位置
 > 向插入排序, 很多元素本轮的位置在下一轮都会发生变化的, 导致很慢
 
@@ -64,3 +64,9 @@ DM = ⌊N/2⌋, Dk-1 = ⌊Dk/2⌋
 **快速排序小规模数据的处理**
 ![快速排序小规模数据的处理](https://upload-images.jianshu.io/upload_images/12014150-58f997e4d2ca2258.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
+
+#### 表排序
+> 待排序列的数据类型很庞大(比如一部电影), 这时交换两个数据的时间不可以忽略不计了
+> 此时我们不改变数据的物理地址, 只是改变指向这些数据的指针顺序以达到排序的目的
+
+![表排序](https://upload-images.jianshu.io/upload_images/12014150-86665b1ada255d88.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
