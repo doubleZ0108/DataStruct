@@ -70,3 +70,8 @@ DM = ⌊N/2⌋, Dk-1 = ⌊Dk/2⌋
 > 此时我们不改变数据的物理地址, 只是改变指向这些数据的指针顺序以达到排序的目的
 
 ![表排序](https://upload-images.jianshu.io/upload_images/12014150-86665b1ada255d88.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+如果最终还是必须要对所有数据进行一次物理排序
+则可以按照一个环一个环的处理
+**复杂度分析**
+![复杂度分析](https://upload-images.jianshu.io/upload_images/12014150-021338cdfa12e6cd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
