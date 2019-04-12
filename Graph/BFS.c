@@ -5,6 +5,7 @@ void BFS(Vertex V)
 
 	visited[V] = true;
 	Q.push(V);
+	
 	while (!Q.empty())
 	{
 		V = Q.front();	Q.pop();
