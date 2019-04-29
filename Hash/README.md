@@ -15,6 +15,8 @@
 &emsp;散列函数为: h(key) = key mod p   
 &emsp;- p 一般为表的大小 TableSize   
 &emsp;- p取素数   
+&emsp; > 为什么p要取素数?   
+&emsp; > 素数的因子只有1和它本身，而合数至少有除1和其本身之外的另一个因子；如果处理的数据是以合数的某一因子为间隔的话，哈希值会不断的重复即冲突加剧。例如，数据是{3,6,9,12,15,18}如果除数取6，哈希值是{3,0,3,0,3,0};如果取5，哈希值为{3,1,4,2,0,3}就没有冲突发生。   
 ![image.png](https://upload-images.jianshu.io/upload_images/12014150-1b5dbb6a122cc1ae.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 3. 数字分析法:   
@@ -53,3 +55,12 @@
 ![image.png](https://upload-images.jianshu.io/upload_images/12014150-bb0386e70fc614f6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 ![image.png](https://upload-images.jianshu.io/upload_images/12014150-3a130fd9181f5bad.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
+
+#### 冲突解决方法
+1. 开放地址法:    
+&emsp;换个位置, 一旦发生冲突, 就按某种规则去寻找另一个空地址
+&emsp;- hi(key) = (h(key) + di) mod TableSize     第i次冲突, 就在原地址基础上增加一个di, 再看看新地址冲不冲突
+&emsp; - 线性探测: di = i, 一个个的往后探测
+&emsp; - 平方探测: di = +- i^2     (有冲突先去h+1^2, 还有冲突去h-i^2, 还有去h+2^2...)
+&emsp; - 双散列: di = i*h2(key) 再设计一个散列函数
+- 链地址法: 把同一位置的冲突对象组织在一起
