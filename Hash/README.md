@@ -58,9 +58,11 @@
 
 #### 冲突解决方法
 1. 开放地址法:    
-&emsp;换个位置, 一旦发生冲突, 就按某种规则去寻找另一个空地址
-&emsp;- hi(key) = (h(key) + di) mod TableSize     第i次冲突, 就在原地址基础上增加一个di, 再看看新地址冲不冲突
-&emsp; - 线性探测: di = i, 一个个的往后探测
-&emsp; - 平方探测: di = +- i^2     (有冲突先去h+1^2, 还有冲突去h-i^2, 还有去h+2^2...)
-&emsp; - 双散列: di = i*h2(key) 再设计一个散列函数
-- 链地址法: 把同一位置的冲突对象组织在一起
+&emsp;换个位置, 一旦发生冲突, 就按某种规则去寻找另一个空地址   
+&emsp;- hi(key) = (h(key) + di) mod TableSize     第i次冲突, 就在原地址基础上增加一个di, 再看看新地址冲不冲突   
+&emsp; - 线性探测: di = i, 如果冲突则一个个的往后探测 => 会造成聚集现象  
+![image.png](https://upload-images.jianshu.io/upload_images/12014150-cd7031159f3aac2b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+&emsp; - 平方探测: di = +- i^2     (有冲突先去h+1^2, 还有冲突去h-i^2, 还有去h+2^2...)   
+&emsp; - 双散列: di = i*h2(key) 再设计一个散列函数      
+2. 链地址法: 把同一位置的冲突对象组织在一起
