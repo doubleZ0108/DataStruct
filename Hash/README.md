@@ -64,5 +64,8 @@
 ![image.png](https://upload-images.jianshu.io/upload_images/12014150-cd7031159f3aac2b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 &emsp; - 平方探测: di = +- i^2     (有冲突先去h+1^2, 还有冲突去h-i^2, 还有去h+2^2...)   
+&emsp;&emsp;平方探测可能会一直找不到空位, 即使有空位,但是因为是跳着找的,可能就是找不到; 但是避免了聚集问题
+> 如果散列表长度TableSize是某个4k+3形式的素数(7,11,19等), 平方探测法就可以探测到整个散列表孔家
+
 &emsp; - 双散列: di = i*h2(key) 再设计一个散列函数      
 2. 链地址法: 把同一位置的冲突对象组织在一起
