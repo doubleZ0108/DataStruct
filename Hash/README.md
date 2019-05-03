@@ -76,3 +76,18 @@
 > 实用的装填因子一般取   0.5 <= alpha <= 0.85
 
 当装填因子过大是, 解决方法是"再散列 Rehashing", 扩大散列表, 并将原来装入的元素*重新装入*
+
+
+#### 散列表的性能分析
+1. 散列函数是否均匀
+2. 处理冲突的方法
+3. 装填因子alpha
+
+![image.png](https://upload-images.jianshu.io/upload_images/12014150-636cf0a2a48a046c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](https://upload-images.jianshu.io/upload_images/12014150-18263ad5956f8944.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](https://upload-images.jianshu.io/upload_images/12014150-3adcda4c68e0a473.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+- 散列法的查找与问题规模无关, 效率期望是O(1)
+- 也使用与直接比较计算量大的问题 (如字符串的比较)
+- 但它是以较小的alpha为前提的, 是空间换时间
+- 不适用于范围查找, 或最大值最小值查找
