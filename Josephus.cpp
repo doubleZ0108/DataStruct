@@ -2,9 +2,9 @@
 #include <cstdlib>
 using namespace std;
 
-//ÓÃÖØÔØº¯ÊıÊµÏÖÁ½ÖÖ²»Í¬½á¹¹µÄ Ô¼Éª·òÎÊÌâ
+//ç”¨é‡è½½å‡½æ•°å®ç°ä¸¤ç§ä¸åŒç»“æ„çš„ çº¦ç‘Ÿå¤«é—®é¢˜
 typedef int LINKLIST;
-typedef char ARRAY;		//½áÎ²µÄ ; ±ğÍüÁËemmmmmmmmm
+typedef char ARRAY;		//ç»“å°¾çš„ ; åˆ«å¿˜äº†emmmmmmmmm
 typedef double CIRLIST;
 
 struct NODE
@@ -28,19 +28,19 @@ struct NODE *CreateLink(int total)
 		fresh->next = NULL;
 	}
 	move->next = head->next;
-		//×îºó½«Î²½áµãÖ¸ÏòÊ×½áµã,ĞÎ³ÉÒ»¸ö²»°üº¬Í·½áµãµÄ»·
+		//æœ€åå°†å°¾ç»“ç‚¹æŒ‡å‘é¦–ç»“ç‚¹,å½¢æˆä¸€ä¸ªä¸åŒ…å«å¤´ç»“ç‚¹çš„ç¯
 	return head;
 }
 void DestroyLink(struct NODE *head)
 {
-	//ÒòÎªÍ·½áµãÒ²Ã»±£´æÓĞĞ§µÄÊı¾İ,ËùÒÔ×öÌØÊâ´¦Àí
+	//å› ä¸ºå¤´ç»“ç‚¹ä¹Ÿæ²¡ä¿å­˜æœ‰æ•ˆçš„æ•°æ®,æ‰€ä»¥åšç‰¹æ®Šå¤„ç†
 	struct NODE *save = head;
 	head = head->next;
 	delete save;
 	save = NULL;
 
 	while (head->data>0)
-		//±È½ÏÌØÊâµÄÇé¿ö,ÒòÎªÃ¿¸ö½áµãµÄÊı¾İ¶¼ÊÇÕıÕûÊı,ËùÒÔÕâÀï×êÁËÒ»µãĞ¡¿Õ×Ó
+		//æ¯”è¾ƒç‰¹æ®Šçš„æƒ…å†µ,å› ä¸ºæ¯ä¸ªç»“ç‚¹çš„æ•°æ®éƒ½æ˜¯æ­£æ•´æ•°,æ‰€ä»¥è¿™é‡Œé’»äº†ä¸€ç‚¹å°ç©ºå­
 	{
 		save = head;
 		head = head->next;
@@ -56,14 +56,14 @@ void Josephus(LINKLIST flag,int total,int first,int gap)
 
 
 	for (int i = 1; i < first; ++i)
-		//ÏÈÒÆ¶¯µ½µÚÒ»¸ö¿ªÊ¼±¨ÊıµÄÈËÖ®Ç°µÄÄÇ¸öÈË
-		//ÒòÎªÒªÉæ¼°µ½µ¥Á´±íµÄÉ¾³ı,ËùÒÔÊ¹ÓÃmove->nextÖ¸ÏòÃ¿Ò»¸öÈË
+		//å…ˆç§»åŠ¨åˆ°ç¬¬ä¸€ä¸ªå¼€å§‹æŠ¥æ•°çš„äººä¹‹å‰çš„é‚£ä¸ªäºº
+		//å› ä¸ºè¦æ¶‰åŠåˆ°å•é“¾è¡¨çš„åˆ é™¤,æ‰€ä»¥ä½¿ç”¨move->nextæŒ‡å‘æ¯ä¸€ä¸ªäºº
 	{
 		move = move->next;
 	}
 	switch (gap)
 	{
-	case 1:		//´Ó1±¨µ½1, ×öÌØÊâ´¦Àí
+	case 1:		//ä»1æŠ¥åˆ°1, åšç‰¹æ®Šå¤„ç†
 	{
 		save = move;
 		printf("%d ", save->data);
@@ -77,24 +77,24 @@ void Josephus(LINKLIST flag,int total,int first,int gap)
 	default:
 	{
 		while (move->next != move)
-			//Õâ¸ö²»³ÉÁ¢,´ú±íÑ­»·Á´±íÖĞÖ»Ê£Ò»¸öÈËÁË, ¿ÉÒÔÍË³öÑ­»·ÁË
+			//è¿™ä¸ªä¸æˆç«‹,ä»£è¡¨å¾ªç¯é“¾è¡¨ä¸­åªå‰©ä¸€ä¸ªäººäº†, å¯ä»¥é€€å‡ºå¾ªç¯äº†
 		{
 			for (int i = 1; i < gap - 1; ++i)
-				//ÒÆ¶¯µ½±¨µ½gapµÄÈËÇ°ÃæµÄÒ»¸öÈË, ÒòÎªÒª×öÉ¾³ı²Ù×÷
+				//ç§»åŠ¨åˆ°æŠ¥åˆ°gapçš„äººå‰é¢çš„ä¸€ä¸ªäºº, å› ä¸ºè¦åšåˆ é™¤æ“ä½œ
 			{
 				move = move->next;
 			}
-			printf("%d ", move->next->data);	//×¢ÒâÊÇÓÃmove->nextÖ¸Ïò³öÁĞµÄÈËµÄ
+			printf("%d ", move->next->data);	//æ³¨æ„æ˜¯ç”¨move->nextæŒ‡å‘å‡ºåˆ—çš„äººçš„
 
 			save = move->next;
 			move->next = move->next->next;
 			delete save;
 			save = NULL;
 
-			move = move->next;	//ÒÆ¶¯µ½ÏÂÒ»¸öÈË
+			move = move->next;	//ç§»åŠ¨åˆ°ä¸‹ä¸€ä¸ªäºº
 		}
 
-		//´òÓ¡×îºóÒ»¸öÈËµÄĞÅÏ¢, ²¢Çå¿ÕÁ´±í
+		//æ‰“å°æœ€åä¸€ä¸ªäººçš„ä¿¡æ¯, å¹¶æ¸…ç©ºé“¾è¡¨
 		printf("%d\n", move->data);
 		delete move, head;
 		move = head = NULL;
@@ -109,11 +109,11 @@ void Josephus(ARRAY flag,int total,int first,int gap)
 	int i, j, cnt;
 	for (i = 1; i <= total; ++i) { arr[i-1] = i; }
 
-	j = first - 1;	//ÕÒµ½µÚÒ»¸ö¿ªÊ¼±¨ÊıµÄÈË, -1ÊÇÒòÎªÊı×é´ÓÏÂ±ê0¿ªÊ¼
+	j = first - 1;	//æ‰¾åˆ°ç¬¬ä¸€ä¸ªå¼€å§‹æŠ¥æ•°çš„äºº, -1æ˜¯å› ä¸ºæ•°ç»„ä»ä¸‹æ ‡0å¼€å§‹
 
 	switch (gap)
 	{
-	case 1:		//´Ó1±¨µ½1, Ò²Òª×öÌØÊâ´¦Àí
+	case 1:		//ä»1æŠ¥åˆ°1, ä¹Ÿè¦åšç‰¹æ®Šå¤„ç†
 	{
 		printf("%d ", arr[j]);
 		for (i = j, ++j; j != i; ++j, j %= total)
@@ -125,38 +125,38 @@ void Josephus(ARRAY flag,int total,int first,int gap)
 	default:
 	{
 		for (i = 0; i < total-1; ++i)
-			//n¸öÈË,Ö»ĞèÉ¾µôn-1¸öÈË,×îºóÒ»¸öÈË×öÌØÊâ´¦Àí
+			//nä¸ªäºº,åªéœ€åˆ æ‰n-1ä¸ªäºº,æœ€åä¸€ä¸ªäººåšç‰¹æ®Šå¤„ç†
 		{
-			++j; j %= total;	//ÊÖ¶¯ÈÃµÚÒ»¸öÈË±¨Êı
+			++j; j %= total;	//æ‰‹åŠ¨è®©ç¬¬ä¸€ä¸ªäººæŠ¥æ•°
 			for (cnt = 1;; ++j, j %= total)
-				//Ã¿Ò»ÂÖ°Ñ¼ÆÊıÆ÷¹é"Áã"
-				//Ã¿Ò»´ÎÑ­»·°ÑjÍùºóÒÆÒ»¸öÏàÁÚÎ»ÖÃ
+				//æ¯ä¸€è½®æŠŠè®¡æ•°å™¨å½’"é›¶"
+				//æ¯ä¸€æ¬¡å¾ªç¯æŠŠjå¾€åç§»ä¸€ä¸ªç›¸é‚»ä½ç½®
 			{
 				if (arr[j] > 0)
-					//Èç¹ûÕâ¸öÈË»¹»î×Å,¼ÆÊıÆ÷¼ÓÒ»
+					//å¦‚æœè¿™ä¸ªäººè¿˜æ´»ç€,è®¡æ•°å™¨åŠ ä¸€
 				{
 					++cnt;
 				}
 
-				//¿ÓÔÚ,Èç¹ûÕÒµ½¸Ã³öÁĞµÄÈËÖ®ºó
-				//jÒªÒ»Ö±¼Ó,Ö±µ½µÚÒ»¸ö´óÓÚÁãµÄÊı,Õâ²ÅÊÇÂß¼­ÉÏµÄÏÂÒ»¸öÈË(²»ÄÜÓÃÎïÀíÉÏµÄÏÂÒ»¸öÈË)
+				//å‘åœ¨,å¦‚æœæ‰¾åˆ°è¯¥å‡ºåˆ—çš„äººä¹‹å
+				//jè¦ä¸€ç›´åŠ ,ç›´åˆ°ç¬¬ä¸€ä¸ªå¤§äºé›¶çš„æ•°,è¿™æ‰æ˜¯é€»è¾‘ä¸Šçš„ä¸‹ä¸€ä¸ªäºº(ä¸èƒ½ç”¨ç‰©ç†ä¸Šçš„ä¸‹ä¸€ä¸ªäºº)
 				if (cnt == gap)
 				{
 					printf("%d ", arr[j]);
-					arr[j] = -1;		//ÖÃ-1´ú±íÕâ¸öÈË³öÁĞ
+					arr[j] = -1;		//ç½®-1ä»£è¡¨è¿™ä¸ªäººå‡ºåˆ—
 					
 					while (arr[j] < 0)
-						//×î¿ÓµÄ²¿·Ö: ÕÒÂß¼­ÉÏµÄÏÂÒ»¸öÈË
+						//æœ€å‘çš„éƒ¨åˆ†: æ‰¾é€»è¾‘ä¸Šçš„ä¸‹ä¸€ä¸ªäºº
 					{
 						++j;
-						j %= total;		//jÒªÊ±¿ÌÌá·ÀÕÒµ½½áÎ²ºó·µ»Øµ½0ºÅÎ»ÖÃ
+						j %= total;		//jè¦æ—¶åˆ»æé˜²æ‰¾åˆ°ç»“å°¾åè¿”å›åˆ°0å·ä½ç½®
 					}
 
 					break;
 				}
 			}
 		}
-		printf("%d\n",arr[j]);	//×îºóÒ»¸öÈËµÄÌØÊâ´¦Àí
+		printf("%d\n",arr[j]);	//æœ€åä¸€ä¸ªäººçš„ç‰¹æ®Šå¤„ç†
 	}
 		break;
 	}
@@ -174,16 +174,16 @@ struct NODE *CreateCirLink(int total)
 	for (int i = 1; i <= total; ++i, move = move->next)
 	{
 		struct NODE *fresh = new NODE;
-		fresh->data = i;		//±ğÍüÁË°Ñ±àºÅÌîµ½Á´±íÀï
+		fresh->data = i;		//åˆ«å¿˜äº†æŠŠç¼–å·å¡«åˆ°é“¾è¡¨é‡Œ
 
 		move->next = fresh;
 		fresh->next = NULL;
 
-		fresh->prior = move;		//Óëµ¥Á´±í±È,Ö»Ôö¼ÓÁËÕâÒ»¾ä
+		fresh->prior = move;		//ä¸å•é“¾è¡¨æ¯”,åªå¢åŠ äº†è¿™ä¸€å¥
 	}
 
-	move->next = head->next;		//°ÑÎ²½áµãÁ´µ½Ê×½áµãÉÏ
-	head->next->prior = move;		//Ê×½áµãÁ´µ½Î²½áµãÉÏ
+	move->next = head->next;		//æŠŠå°¾ç»“ç‚¹é“¾åˆ°é¦–ç»“ç‚¹ä¸Š
+	head->next->prior = move;		//é¦–ç»“ç‚¹é“¾åˆ°å°¾ç»“ç‚¹ä¸Š
 
 	return head;
 }
@@ -199,7 +199,7 @@ void Josephus(CIRLIST flag, int total, int first, int gap)
 	}
 
 	while (move != move->next)
-		//ÅĞ¿ÕÌõ¼şÎªÁ´±íÖĞÊÇ·ñÖ»Ê£ÏÂÒ»¸ö´¢´æÓĞĞ§Êı¾İµÄ½áµã
+		//åˆ¤ç©ºæ¡ä»¶ä¸ºé“¾è¡¨ä¸­æ˜¯å¦åªå‰©ä¸‹ä¸€ä¸ªå‚¨å­˜æœ‰æ•ˆæ•°æ®çš„ç»“ç‚¹
 	{
 		for (int i = 1; i < gap; ++i)
 		{
@@ -208,11 +208,11 @@ void Josephus(CIRLIST flag, int total, int first, int gap)
 
 		save = move;
 
-		//Ë«ÏòÁ´±íµÄÉ¾³ı²Ù×÷
+		//åŒå‘é“¾è¡¨çš„åˆ é™¤æ“ä½œ
 		move->prior->next = move->next;
 		move->next->prior = move->prior;
 
-		move = move->next;		//±ğÍüÁËÒÆ¶¯µ½ÏÂÒ»¸öÈË
+		move = move->next;		//åˆ«å¿˜äº†ç§»åŠ¨åˆ°ä¸‹ä¸€ä¸ªäºº
 
 		printf("%d ", save->data);
 
@@ -225,24 +225,32 @@ void Josephus(CIRLIST flag, int total, int first, int gap)
 	move = head = NULL;
 }
 
+int f(int n,int m)
+{
+	if(n==1) {return n;}
+	else{
+		return (f(n-1,m)+m-1)%n+1;
+	}
+}
+
 int main(void)
 {
 	int total, first, gap;
-	cout << "ÇëÊäÈë×ÜÈËÊı: "; cin >> total;
-	cout << "´ÓµÚ¼¸¸öÈË¿ªÊ¼±¨Êı: "; cin >> first;
-	cout << "Ã¿´Î´ÓÒ»±¨µ½¼¸: "; cin >> gap;
+	cout << "è¯·è¾“å…¥æ€»äººæ•°: "; cin >> total;
+	cout << "ä»ç¬¬å‡ ä¸ªäººå¼€å§‹æŠ¥æ•°: "; cin >> first;
+	cout << "æ¯æ¬¡ä»ä¸€æŠ¥åˆ°å‡ : "; cin >> gap;
 
 	LINKLIST flag_list = 0;
 	ARRAY flag_array = '\0';
 	CIRLIST flag_cirlist = 0.0;
 
-	printf("\n********ÓÃµ¥Ñ­»·Á´±íÊµÏÖÔ¼Éª·òÉúËÀ»·*********\n");
+	printf("\n********ç”¨å•å¾ªç¯é“¾è¡¨å®ç°çº¦ç‘Ÿå¤«ç”Ÿæ­»ç¯*********\n");
 	Josephus(flag_list,total,first,gap);
 
-	printf("\n********ÓÃÊı×éÊµÏÖÔ¼Éª·òÉúËÀ»·*********\n");
+	printf("\n********ç”¨æ•°ç»„å®ç°çº¦ç‘Ÿå¤«ç”Ÿæ­»ç¯*********\n");
 	Josephus(flag_array,total,first,gap);
 
-	printf("\n********ÓÃË«ÏòÑ­»·Á´±íÊµÏÖÔ¼Éª·òÉúËÀ»·*********\n");
+	printf("\n********ç”¨åŒå‘å¾ªç¯é“¾è¡¨å®ç°çº¦ç‘Ÿå¤«ç”Ÿæ­»ç¯*********\n");
 	Josephus(flag_cirlist, total, first, gap);
 
 	system("pause");
